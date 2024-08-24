@@ -1,0 +1,564 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Poppins:wght@200;500&family=Quicksand:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
+
+@font-face {
+  font-family: Monserrat;
+  src: url(../../fonts/montserrat/Montserrat-Light.otf)
+}
+
+*{
+
+    padding: 0;
+    outline: none;
+    box-sizing: content-box;
+    font-family: "Nunito Sans", sans-serif;
+  }
+
+  .bodyNav{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 10px;
+    font-family: Monserrat;
+    background: #ffffff;
+  }
+
+
+.form-all{
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    padding: 25px 40px 2px 0px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+  .mform{
+    height: 100%;
+    top: 50px;
+    /* width: 1250px; */
+    margin-left: 70px;
+    background: #fff;
+    padding: 15px 40px 10px 40px;
+    /* box-shadow: 0px 0px 10px rgba(0,0,0,0.1); */
+    position: relative;
+    /* bottom: 120px; */
+
+  }
+
+  .mform .text{
+    padding-left: 25px;
+    font-size: 22px;
+    font-weight: 600;
+    font-family: Monserrat;
+    background: #070707;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .mform form{
+    padding: 30px 0 0 0;
+  }
+  .mform form .form-row{
+    display: flex;
+    margin: 32px 0;
+  }
+
+  form .form-row .input-data{
+    width: 100%;
+    height: 40px;
+    margin: 0 20px;
+    position: relative;
+    border-radius: 0px;
+    
+  }
+
+  form .form-row .textarea{
+    height: 70px;
+  }
+
+  .input-data input,
+  .textarea textarea{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-size: 17px;
+    border-bottom: 2px solid rgba(0,0,0, 0.12);
+    font-style: italic;
+    color: rgba(53, 53, 53, 0.473);
+    text-align: left;
+  
+  }
+  .input-data input:focus ~ label, .textarea textarea:focus ~ label,
+  .input-data input:valid ~ label, .textarea textarea:valid ~ label{
+    transform: translateY(-20px);
+    font-size: 14px;
+    color: #CF5D67;
+  }
+  .textarea textarea{
+    resize: none;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(99, 98, 98, 0.473);
+    border-color: #a8a8a86b;
+    margin: 10px;
+    text-align: left;
+    font-family: Monserrat;
+   
+  }
+  .input-data label{
+    color: #CF5D67;
+    position: absolute;
+    pointer-events: none;
+    bottom: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+  .textarea label{
+    color: #CF5D67;
+    width: 100%;
+    bottom: 40px;
+    background: #fff;
+  }
+  .input-data .underline{
+    position: absolute;
+    bottom: -1px;
+    height: 2px;
+    width: 100%;
+  }
+  .input-data .underline:before{
+    position: absolute;
+    content: "";
+    height: 2px;
+    width: 100%;
+    background: #CF5D67;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+  }
+  .input-data .underline-textarea {
+    position: absolute;
+    bottom:-12px;
+    height: 2px;
+    width: 100%;
+}
+.input-data .underline-textarea:before {
+    position: absolute;
+    content: "";
+    height: 2px;
+    width: 100%;
+    background: #CF5D67;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+}
+
+  .input-data input:focus ~ .underline:before,
+  .input-data input:valid ~ .underline:before,
+  .textarea textarea:focus ~ .underline-textarea:before,
+  .textarea textarea:valid ~ .underline-textarea:before{
+    transform: scale(1);
+  }
+  .submit-btn .input-data{
+    overflow: hidden;
+    height: 40px!important;
+    width: 15%!important;
+  }
+  .submit-btn .input-data .inner{
+    border-radius: 10px;
+    height: 100%;
+    width: 300%;
+    left: -100%;
+    position: absolute;
+    background: #CF5D67;
+    transition: all 0.4s;
+  }
+  .submit-btn .input-data:hover .inner{
+    left: 0;
+
+  }
+  .submit-btn .input-data input{
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (max-width: 700px) {
+    .mform {
+      top: 100px;
+      
+    }
+
+    .mform .text{
+      font-size: 30px;
+    }
+    .mform form{
+      padding: 10px 0 0 0;
+    }
+    .mform form .form-row{
+      display: block;
+    }
+    form .form-row .input-data{
+      margin: 35px 0!important;
+    }
+    .submit-btn .input-data{
+      width: 40%!important;
+    }
+  }
+
+.Chamados {
+  padding: 10px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.delete-btn{
+  display: inline-block;
+  font-size: 15px;
+  height: 15px;
+  width: 120px;
+  margin: 10px;
+}
+.update-btn {
+  display: inline-block;
+  font-size: 15px;
+  height: 15px;
+  width: 120px;
+  margin: 10px;
+}
+
+.update-btn:hover {
+  background: #CF5D67;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0px 4px 10px #CF5D67;
+}
+.delete-btn:hover {
+  background: #CF5D67;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0px 4px 10px #CF5D67;
+}
+
+.mtable{
+  display: flex;
+  width: 80%;
+  height: 100%;
+  background: #fff;
+  /* padding: 15px 40px 10px 40px; */
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  position: relative;
+  /* margin-left: 240px; */
+  /* bottom: 220px; */
+}
+
+.mtable .text {
+  padding-left: 25px;
+    font-size: 22px;
+    font-weight: 600;
+    font-family: Monserrat;
+    background: #070707;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.table {
+	border:1px solid #EEEEEE;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  padding: 10px;
+}
+
+.table-header {
+	display:flex;
+	width:100%;
+	background:#CF5D67;
+	padding:(12px * 1.5) 0;
+  align-items: center;
+}
+
+.table-row {
+	display:flex;
+	width:100%;
+	padding:(12px * 1.5) 0;
+	
+	&:nth-of-type(odd) {
+		background: #fff5f5;
+	}
+}
+
+.table-data, .header__item {
+	flex: 1 1 20%;
+	text-align: center;
+  font: "Nunito Sans", sans-serif; 
+}
+
+.header__item {
+	
+  padding: 5px;
+  font: "Nunito Sans", sans-serif; 
+}
+
+.filter__link {
+	color:white;
+	text-decoration: none;
+	position:relative;
+	display:inline-block;
+	padding-left: 24px;
+	padding-right: 24px;
+	
+	&::after {
+		content:'';
+		position:absolute;
+		right:-(12px * 1.5);
+		color:white;
+		font-size: 12px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	
+	&.desc::after {
+		content: '(desc)';
+	}
+
+	&.asc::after {
+		content: '(asc)';
+	}
+	
+}
+
+.encomendasFeitas{
+  display: inline-block;
+  position: relative;
+  flex-wrap: nowrap;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.profile{
+  padding: 10px 10px 10px 10px;
+  position: fixed;
+  top: 0px;
+  right: 20px;
+  display: ruby;
+  align-items: center;
+  z-index: 1;
+}
+
+.profile .item-a {
+  display: flex;
+  position: relative;
+  width: 200px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile .item-a svg{
+  display: flex;
+  position: relative;
+  float: left;
+  padding: 5px;
+
+}
+
+.profile .item-a .item .texts{
+  position: relative;
+  display: flex;
+  right: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  top: 30px;
+  padding: 5px;
+  width: 100px;
+}
+
+.container {
+  position: relative;
+}
+
+.popup{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #0707073f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-inner{
+  position: relative;
+  padding: 32px;
+  width: 60%;
+  max-width: 640px;
+  background-color: #fff;
+  border-radius: 10px;
+  margin-left: 240px;
+}
+
+.popup-inner .close-btn{
+  display: flex;
+  font-size: 12px;
+  height: 15px;
+  width: 70px;
+  margin: 10px;
+  float: right;
+  
+}
+
+.close-btn:hover {
+  background: #CF5D67;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0px 4px 10px #CF5D67;
+}
+
+.modalButton{
+  display: inline-block;
+  font-size: 12px;
+  height: 15px;
+  width: 70px;
+  margin: 10px;
+  float: right;
+}
+
+
+.modalButton:hover {
+  background: #CF5D67;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0px 4px 10px #CF5D67;
+}
+.input-modal input{
+  display: block;
+    width: 50%;
+    height: 100%;
+    border: none;
+    font-size: 15px;
+    border-bottom: 2px solid rgba(0,0,0, 0.12);
+    font-style: italic;
+    color: rgba(53, 53, 53, 0.473);
+    text-align: left;
+}
+
+.input-modal .modalLabel{
+  color: #CF5D67;
+  pointer-events: none;
+  bottom: 10px;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  padding: 10px;
+}
+
+.container-modal{
+  padding: 10px;
+  position: relative;
+  display: inline;
+  justify-content: center;
+  
+}
+
+.container-modal .input-modal{
+  padding: 10px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.text-modal{
+  padding: 10px;
+  font-size: 22px;
+  font-weight: 500;
+  font-family: Monserrat;
+  background: #070707;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.text-profile {
+  display: flex !important;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+}
+.item-profile {
+  display: flex;
+}
+
+@media screen and (min-width: 1460px){
+  .mform{
+    width: 80%;
+    margin-left: 100px;
+  }
+
+  .mtable {
+    width: 80%;
+   
+  }
+
+  .table{
+    width:1150px;
+  }
+  
+}
+
+@media screen and (max-width: 1460px){
+  .mform{
+    width: 75%;
+    margin-left: 100px;
+  }
+
+  .mtable {
+    width: 75%;
+  
+  }
+
+  .table{
+    width:1000px;
+  }
+  
+}
+
+@media screen and (max-width: 1250px){
+  .mform{
+    width: 70%;
+    margin-left: 100px;
+  }
+
+  .mtable {
+    width: 70%;
+   
+  }
+
+  .table{
+    width:150%;
+  }
+
+  .mform .table {
+    width:100%;
+  }
+  
+}
+
+@media screen and (max-width: 1030px){
+  .mform{
+    width: 65%;
+    margin-left: 70px;
+  }
+
+  .mtable {
+    width: 65%;
+   
+  }
+  
+}

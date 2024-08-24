@@ -1,0 +1,210 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@font-face {
+  font-family: Monserrat;
+  src: url(./fonts/montserrat/Montserrat-Light.otf)
+}
+
+.form select, .form input{
+  font-size: calc(4px + 2vmin);
+  font-style: italic;
+  background-color: #f2f2f32d;
+  border-style: none;
+  padding: 5px;
+  border-radius: 10px;
+  color: rgba(99, 98, 98, 0.473);
+  border-color: #a8a8a86b;
+  margin: 10px;
+  text-align: left;
+  font-family: Monserrat;
+  width: calc(300px + 2vmin);
+}
+
+
+label {
+  padding: 10px;
+  font-family: Monserrat;
+}
+
+button{
+  font-size: calc(4px + 2vmin);
+  font-family: Monserrat;
+  background: #f2f2f32d;
+  padding: 10px;
+  border-radius: 10px;
+  border-color: #a8a8a86b;
+  text-align: center;
+  color: black;
+  margin: 10px;
+  border-style: none;
+  display: flex;
+  width: calc(100px + 2vmin);
+  justify-content: center;
+}
+
+.logIn:focus, .logIn:hover {
+  background-color: #e62b92;
+  box-shadow:0 0 .25em #e62b92;
+}
+
+.signIn:focus, .signIn:hover {
+  box-shadow:0 0 .25em #443f42;
+}
+
+.logIn {
+  background: #D64695;
+  color: #ffff;
+}
+
+.form {
+  display: ruby-text;
+ /* 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  */
+}
+
+.logo {
+  text-align: center;
+  height: 45vh;
+  width: 45vh;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.App-header {
+  text-align: center;
+  color: white;
+  background-size: "100%";
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #f8eded;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  background-image: url("./img/fundo.png");
+}
+
+.caixa {
+  text-align: center;
+  color: white;
+  background-size: "100%";
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: rgb(235, 235, 235);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.header-caixa {
+  height: 50px;
+  background-color: #ffffff;
+  width: 100%;
+  margin-top: 0;
+  display: flex;
+  font-family: Monserrat;
+  text-align: center;
+  justify-content: flex-start;
+  font-size: calc(0.5px + 2vmin);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: #d8cece98;
+  border-width: 5px;
+}
+
+.logoHeader {
+  height: 15vh;
+  width: 15vh;
+}
+
+.bg {
+  animation:slide 3s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #6c3 50%, #D64695 50%);
+  bottom:0;
+  left:-60%;
+  opacity:.5;
+  position:fixed;
+  right:-60%;
+  top:0;
+  z-index:-1;
+}
+
+
+.bg2 {
+  animation-direction:alternate-reverse;
+  animation-duration:4s;
+}
+
+.bg3 {
+  animation-duration:5s;
+}
+
+.content {
+  box-shadow:0 0 .25em rgba(0,0,0,.25);
+  box-sizing:border-box;
+  left:50%;
+  position:fixed;
+  top:50%;
+  transform:translate(-50%, -50%);
+  padding: 20px;
+  text-align: left;
+  background-color: #ffffff;
+  font-size: calc(4px + 2vmin);
+  color: black;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+}
+
+h1 {
+  font-family:monospace;
+}
+
+@keyframes slide {
+  0% {
+    transform:translateX(-25%);
+  }
+  100% {
+    transform:translateX(25%);
+  }
+}
