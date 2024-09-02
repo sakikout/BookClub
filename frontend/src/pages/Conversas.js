@@ -6,26 +6,29 @@ import axios from 'axios';
 // import $ from 'jquery';
 
 import logo from "../img/logo.png"
+import sendImg from "../icons/send-svg.png"
 import Popup from '../components/popuplogin';
 import '../components/style/style.css'
 import StoreContext from '../components/Store/Context';
 
-function createChamados(data) {
-  const chamados = [];
+function createMessages(data) {
+  const messages = [];
+  const colors = ['#FF69B4', '#FF4500', '#FFA500', '#FFD700', '#EE82EE',
+    '#FF00FF', '#6A5ACD',  '#7CFC00', '#32CD32', '#00FF7F', '#00FFFF', '#1E90FF',
+    '#A0522D', '#FFF0F5', '#696969', '#FF0000', '#B22222'
+   ];
     
     for (let i = 0; i < Object.keys(data.idchamado).length; i++) {
-      chamados.push({
-        id: data['idchamado'][i],
-        nome: data['nomefuncionario'][i],
-        departamento: data['departamento'][i],
-        titulo: data['titulo'][i],
-        assunto: data['assunto'][i],
+      let randomIndex = Math.floor(Math.random() * colors.length)
+      messages.push({
+        id: crypto.randomUUID(),
+        nome: data['nomeUsuario'][i],
+        conteudo: data['assunto'][i],
+        color: colors[randomIndex]
       });
   }
 
-  
-
-  return chamados;
+  return messages;
 }
 
 function Conversas({userData}){
@@ -33,20 +36,22 @@ function Conversas({userData}){
     const navigate = useNavigate();
     const [tableData, setTableData] = useState([]);
     const { setToken, token } = useContext(StoreContext);
+    const { setNome, nome } = useContext(StoreContext);
+    const { setComunidade, comunidade } = useContext(StoreContext);
+    const { setColor, color } = useContext(StoreContext);
     const [buttonPopup, setButtonPopup] = useState(false);
     const [buttonDeletePopup, setDeletePopup] = useState(false);
     
-    const[formData, setChamados] = useState({
-            id: '2001',
-            nome: 'Funcionario',
-            departamento: '2',
-            titulo: 'Chamado Teste',
-            assunto: 'Assunto do Chamado',
+    const[formData, setMessage] = useState({
+            nome: nome,
+            comunidade: comunidade,
+            conteudo: '',
+            color: color
     });
     
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setChamados((prevData) => ({
+        setMessage((prevData) => ({
           ...prevData,
           [name]: value,
         }));
@@ -73,181 +78,97 @@ function Conversas({userData}){
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
-    axios.post('http://127.0.0.1:5000/api/criaChamado', formData)
-      .then(response => {
-        console.log('Resposta do servidor:', response.data);
-        window.alert("Chamado criado com sucesso");
-      })
-      .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-        window.alert("Erro ao criar chamado");
-      });
-  };
 
-  const handleClearChamados = () => {
-    setDeletePopup(true);
-  }
-
-  const handleSubmitDelete = (event) => {
-    event.preventDefault();
-    console.log(formData.id);
-
-    axios.post('http://127.0.0.1:5000/api/deletaChamado', formData)
-      .then(response => {
-        console.log('Resposta do servidor:', response.data);
-        setDeletePopup(false);
-        handleCreateChamados(event)
-      })
-      .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-      });
-
-      
-  }
-
-const handleCreateChamados = (event) => {
-  event.preventDefault();
-      
-  axios.get('http://127.0.0.1:5000/api/getChamado')
+    axios.post('http://127.0.0.1:5000/api/enviaMensagem', formData)
     .then(response => {
       console.log('Resposta do servidor:', response.data);
-      const table = createChamados(response.data)
-      setTableData([...table])
+      setDeletePopup(false);
+      handleLoadMessages(event)
     })
     .catch(error => {
       console.error('Erro ao enviar dados:', error);
     });
+
+    console.log(comunidade)
+    console.log(nome)
+    console.log(color)
+
+    const elementSelf = createMessageSelfElement(formData.conteudo)
+    const chatMessages = document.querySelector(".chatMessages")
+    chatMessages.appendChild(elementSelf)
+
+  };
+
+
+const handleLoadMessages = (event) => {
+  event.preventDefault();
+  /* Precisa alterar isso para pegar as mensagens de cada comunidade */
+      
+  axios.get('http://127.0.0.1:5000/api/getMessages')
+    .then(response => {
+      console.log('Resposta do servidor:', response.data);
+      const table = createMessages(response.data)
+      setTableData([...table])
+
+      
+    
+    })
+    .catch(error => {
+      console.error('Erro ao enviar dados:', error);
+    });
+
+  
+ 
 }
+
+  const createMessageSelfElement = (content) => {
+    const div = document.createElement('div')
+    div.classList.add('messageSelf')
+    div.innerHTML = content
+    return div
+  }
+
+  const createMessageOtherElement = (content, user, userColor) => {
+    const div = document.createElement('div');
+    const span = document.createElement('span');
+    div.classList.add('messageOther');
+    div.classList.add('messageUser');
+    span.style.color = userColor;
+    div.appendChild(span);
+    span.innerHTML = user;
+    div.innerHTML += content;
+    return div;
+  }
+
 
 
     return (
-      <div className="mform">
-        <div class = "text">Conversas</div>
-        <form onSubmit={handleSubmit}>
-           
-            <div className='form-all'>
-              <div class = "text">
-                Abrir Chamado
-              </div>
-              <div class="form-row">
-              <div class="input-data">
-                <input 
-                        name="nome" 
-                        className='dadosChamado' 
-                        value={formData.nome}
-                        onChange={handleInputChange} required/>
-                        <div class="underline"></div>
-                    <label for="nome">
-                    Nome
-                    </label>
-              </div>
-              <div class="input-data">
-                  <input 
-                        name="departamento" 
-                        className='dadosChamado' 
-                        value={formData.departamento}
-                        onChange={handleInputChange} required/>
-                  <div class="underline"></div>
-                <label for="departamento">
-                    Departamento
-                    
-                </label>    
-                </div>
-                
-                <div class = "input-data">
-                  <input 
-                        name="titulo" 
-                        className='dadosChamado' 
-                        value={formData.titulo}
-                        onChange={handleInputChange} required />
-                  <div class="underline"></div>
-                <label for="titulo">
-                    Titulo  
-                </label>     
-                </div>
-                
-              </div>
-              <div className='form-row'>
-              <div class = "input-data textarea">
-              <textarea name="assunto" 
-                        className='dadosChamado' 
-                        value={formData.assunto}
-                        onChange={handleInputChange} 
-                        rows="8" cols="80" required>
-
-              </textarea>
-                <br />
-                
-                <div class="underline-textarea"></div>
-                <label for="assunto">
-                    Assunto
-                </label>
-                <br />
-                </div>
-                </div>
-                <div class="form-row submit-btn">
-                  <div class="input-data">
-                    <div class="inner"></div>
-                      <input type="submit" value="submit"/>
-
-                  </div>
-                </div>
-                
-                
+      <div className = "mform">
+        <div className = "chatText">{comunidade.comunidade} Chat</div>
+        <section className="chat">
+          <section className="chatMessages">
+            <div className='messageSelf'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin enim et risus pharetra, in mattis tellus efficitur. Sed egestas enim viverra ante tincidunt eleifend. Etiam dui diam, imperdiet eu hendrerit a, facilisis nec arcu. Duis laoreet nulla et eleifend suscipit. Aenean pellentesque ornare volutpat. Curabitur quis faucibus velit, a lobortis tellus. Aliquam sit amet libero sed enim bibendum interdum.
+Maecenas non est varius, lacinia massa sed, congue turpis. Sed bibendum magna imperdiet commodo volutpat. Donec elementum diam tellus, vel hendrerit quam pretium vitae. Etiam aliquam justo sit amet pharetra maximus. Donec non odio nec purus aliquam malesuada. Ut finibus nulla tortor, et venenatis felis faucibus sed. </div>
+            <div className='messageOther'>
+              <span className='messageUser'>User</span>
+              Doidera.
             </div>
-        </form>
-
-        <div className='Chamados'>
-          <div class = "text">Chamados</div>
-            <button className= "update-btn" onClick={handleCreateChamados}>Recarregar</button>
-   
-            <div className="mtable">
-              <div class="table">
-                <div class="table-header">
-
-                  <div class="header__item">
-                  <a id="id" class="filter__link filter__link--number" >
-                   Id
-                  </a>
-                  </div>
-                  <div class="header__item">
-                  <a id="nome" class="filter__link filter__link--number" >
-                   Nome
-                  </a>
-                  </div>
-                  <div class="header__item">
-                  <a id="departamento" class="filter__link filter__link--number">
-                    Departamento</a>
-                  </div>
-                  <div class="header__item">
-                  <a id="titulo" class="filter__link filter__link--number">
-                    Titulo</a>
-                  </div>
-                  <div class="header__item">
-                  <a id="assunto" class="filter__link filter__link--number">
-                    Assunto</a>
-                  </div>
-
-                </div>
-                <div class="table-content">
-                  {
-                    tableData.map((obj) => {
-                      return (
-                        <div class="table-row">
-                          <div class="table-data">{obj.id}</div>
-                          <div class="table-data">{obj.nome}</div>
-                          <div class="table-data">{obj.departamento}</div>
-                          <div class="table-data">{obj.titulo}</div>
-                          <div class="table-data">{obj.assunto}</div>
-                        </div>
-                      );
-                    })
-                  }
-                </div>
-              </div>
-            </div>
-        </div>
+          </section>
+          <form className="chatForm" onSubmit={handleSubmit}>
+            <input 
+            name= 'conteudo'
+            type="text" 
+            className="chatInput" 
+            placeholder='Digite uma mensagem'
+            value={formData.conteudo}
+            onChange={handleInputChange} 
+            ></input>
+            <button type="submit" className="chatButton">
+              <img src={sendImg} className='send-img' alt='send'></img>
+            </button>
+          </form>
+        </section>
+          
       </div>
         
         

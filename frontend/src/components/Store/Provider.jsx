@@ -7,6 +7,7 @@ const StoreProvider = ({ children }) => {
   const [cpf, setCpf] = useStorage('cpf');
   const [nome, setNome] = useStorage('nome');
   const [ comunidade, setComunidade] = useStorage('comunidade');
+  const [color, setColor] = useStorage('color');
 
   return (
     <Context.Provider
@@ -18,7 +19,9 @@ const StoreProvider = ({ children }) => {
         nome,
         setNome,
         comunidade,
-        setComunidade
+        setComunidade,
+        color,
+        setColor
       }}
     >
       {children}

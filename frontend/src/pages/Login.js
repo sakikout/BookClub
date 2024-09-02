@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import StoreContext from '../components/Store/Context';
 import {withRouter} from 'react-router-dom';
 import Popup from '../components/popuplogin';
+import PopupSignIn from '../components/Popup';
 import axios from 'axios';
 
 
@@ -13,15 +14,22 @@ import axios from 'axios';
 function Formulario({navigation}){
     //const history = useNavigate();
     const navigate = useNavigate()
+    const [buttonPopup, setButtonPopup] = useState(false);
     const { setToken, token } = useContext(StoreContext);
     const { setCpf, cpf } = useContext(StoreContext);
     const { setNome, nome } = useContext(StoreContext);
+    const { setColor, color} = useContext(StoreContext);
 
     
     const [formData, setFormData] = useState({
         login: '2001', 
         senha: '123', 
     });
+
+    const colors = ['#FF69B4', '#FF4500', '#FFA500', '#FFD700', '#EE82EE',
+      '#FF00FF', '#6A5ACD',  '#7CFC00', '#32CD32', '#00FF7F', '#00FFFF', '#1E90FF',
+      '#A0522D', '#FFF0F5', '#696969', '#FF0000', '#B22222'
+     ];
     
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -31,34 +39,24 @@ function Formulario({navigation}){
         }));
     };
 
-    const signIn = () => {
+    const handleSignIn = () => {
       console.log("Sign In!");
+      setButtonPopup(true);
     };
 
     const handleSubmit = (event) => {
       
-    /*
+  
       axios.post('http://127.0.0.1:5000/api/login', formData)
       .then(response => {
         
         if(response.data.error != true){
-          if(response.data.option == 1){
             setToken({token: 1});
-            setCpf({cpf: response.data.cpfop});
-            setNome({nome: response.data.opnome});
+            setCpf({cpf: response.data.cpf});
+            setNome({nome: response.data.nome});
+            setColor({color: response.data.color})
             navigate("Home",  { replace: false });
-          } else if(response.data.option == 2){
-            setToken({token: 2});
-            setCpf({cpf: response.data.cpfge});
-            setNome({nome: response.data.gernome});
-            navigate("Home",  { replace: false });
-          } else if(response.data.option == 3){
-            setToken({token: 3});
-            setCpf({cpf: response.data.cpfrep});
-            setNome({nome: response.data.repnome});
-            navigate("Home",  { replace: false });
-          }
-          
+
         } else {
           window.alert("Erro ao fazer login! verifique seu usuario e senha e tente novamente.");
         }
@@ -67,16 +65,37 @@ function Formulario({navigation}){
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
-      */
+  
         
         if (formData.login == '2001' && formData.senha == '123'){
           setToken({token: 1});
           setCpf({cpf: "000.000.000-00"});
           setNome({nome: "John Doe"});
+          setColor({color: getRandomColor()})
           navigate("comunidades",  { replace: false });
         }
         event.preventDefault();
       };
+
+      const getRandomColor = () => {
+        const randomIndex = Math.floor(Math.random() * colors.length)
+        return colors[randomIndex]
+      }
+
+      const handleSubmitModal = (event) => {
+        event.preventDefault();
+        console.log(formData.nome);
+    
+        axios.post('http://127.0.0.1:5000/api/criaUsuario', formData)
+          .then(response => {
+            console.log('Resposta do servidor:', response.data);
+            setButtonPopup(false);
+    
+          })
+          .catch(error => {
+            console.error('Erro ao enviar dados:', error);
+          });
+      }
     
 
     return (
@@ -84,6 +103,7 @@ function Formulario({navigation}){
         <div className="bg"></div>
         <div className="bg bg2"></div>
         <div className="bg bg3"></div>
+        
         <div className='content'>
         <img src={logo} className='logo' alt="BookClub logo!"/>
             <div>
@@ -109,10 +129,60 @@ function Formulario({navigation}){
                         onChange={handleInputChange} />
                 </label>
                 <button className="logIn" type="submit"> Login </button>
-                <button className= "signIn" type="" onClick={signIn}>Sign In</button>
+                <button className= "signIn" type="button" onClick={handleSignIn}>Sign In</button>
             </div>
         </form>
+        
         </div>
+        <PopupSignIn trigger={buttonPopup} setTrigger={setButtonPopup}>
+          <div className='container-modal'>
+            <div className="text-modal">Criar Usuário</div>
+            <form onSubmit={handleSubmitModal}>
+            <div class="form-row">
+              <div class="input-modal">
+                <label className='modalLabel' for="cdprod">
+                  Nome
+                </label>
+                <input 
+                      name="nome" 
+                      className='dadosUsers' 
+                      value={formData.nome}
+                      onChange={handleInputChange} required/>
+              </div>
+
+              <div class = "input-modal">
+                <label className='modalLabel' for="quantidade">
+                  Nome de Usuário
+                </label>
+                <input 
+                      name="cpf" 
+                      className='dadosUsers' 
+                      value={formData.cpf}
+                      onChange={handleInputChange} required />
+              </div>
+              </div>
+              <div class="form-row">
+
+              <div class = "input-modal">
+                <label className='modalLabel' for="quantidade">
+                  Senha
+                </label>
+                <input 
+                      name="senha" 
+                      className='dadosUsers' 
+                      value={formData.senha}
+                      onChange={handleInputChange} required />
+              </div>
+              </div>
+
+              <div class="form-row">
+              </div>
+              <button className= "modalButton" 
+              type = "submit"
+             >Atualizar</button>
+              </form> 
+          </div>
+        </PopupSignIn>
       </div>
         
         

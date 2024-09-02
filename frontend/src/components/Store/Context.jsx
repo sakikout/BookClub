@@ -8,7 +8,9 @@ const StoreContext = createContext({
   nome: null,
   setNome: () => {},
   comunidade: null,
-  setComunidade: () => {}
+  setComunidade: () => {},
+  color: null,
+  setColor: () => {}
 });
 
 export default StoreContext;

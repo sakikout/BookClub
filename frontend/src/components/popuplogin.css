@@ -20,6 +20,8 @@
   }
   .modal > .close {
     cursor: pointer;
+    width: 40px;
+    height: 40px;
     position: absolute;
     display: block;
     padding: 2px 5px;
@@ -30,4 +32,11 @@
     background: #ffffff;
     border-radius: 18px;
     border: 1px solid #cfcece;
+  
+  }
+
+  .closebtn {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
   }

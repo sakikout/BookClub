@@ -31,12 +31,14 @@ const Home = ({userData}) => {
     console.log(comunidade)
   })
 
+  /*  <Usuario userData={userData}></Usuario> */
+
   return (
     <div className="main">
       { token ?
         <div>
         <Sidebar userData={userData} newMessage={ handleClick }></Sidebar>
-        <Usuario userData={userData}></Usuario>
+        
         {state.message === 0 ?
           <h2>Pagina Inicial</h2>
         : ''}

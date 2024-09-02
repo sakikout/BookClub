@@ -39,7 +39,7 @@ label {
   font-family: Monserrat;
 }
 
-button{
+.classicButton, .update-btn, .delete-btn, .close-btn, .modalButton, .logIn, .signIn{
   font-size: calc(4px + 2vmin);
   font-family: Monserrat;
   background: #f2f2f32d;
@@ -195,6 +195,99 @@ button{
   display: flex;
   align-items: center;
 }
+.chatText{
+  font-size: 22px;
+  font-weight: 600;
+  font-family: Monserrat;
+  background: #070707;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: fixed;
+}
+.chat {
+  margin-top: 50px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chatMessages{
+  height: 700px;
+  width: 100%;
+  flex-grow: 1;
+  padding: 20px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.chatForm{
+  display: flex;
+  justify-content: center;
+  width: 120dvh;
+  position: fixed;
+  bottom: 0;
+}
+
+.chatInput{
+  border-radius: 10px;
+  border: 0.1px solid rgb(236, 232, 232);
+  width: 100%;
+  font-size: 1rem;
+
+}
+
+.send-img {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.send-img:hover{
+  animation: expander 1.0s;
+
+}
+
+
+.chatButton {
+  margin: 10px;
+  border-style: none;
+  background: none;
+}
+
+.chatMessages > div {
+  padding: 10px;
+  width: 100%;
+  max-width: 250px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  line-height: 22px;
+}
+
+.messageSelf{
+  background-color: #fac9e1;
+  color: #121212;
+  align-self: flex-end;
+  border-radius: 10px 10px 0px 10px;
+}
+
+.messageOther{
+  background-color: #ebddea;
+  color: #121212;
+  align-self: flex-start;
+  border-radius: 10px 10px 10px 0px;
+}
+
+.messageUser {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
 
 h1 {
   font-family:monospace;
@@ -206,5 +299,23 @@ h1 {
   }
   100% {
     transform:translateX(25%);
+  }
+}
+
+@keyframes expander {
+  0% {
+  
+    transform: scale(1);
+  }
+
+  50% {
+ 
+    transform: scale(1.2);
+  }
+  
+
+  100% {
+
+    transform: scale(1);
   }
 }
