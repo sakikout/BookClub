@@ -13,17 +13,31 @@ import StoreContext from '../components/Store/Context';
 
 function createMessages(data) {
   const messages = [];
+    for (let i = 0; i < Object.keys(data.id).length; i++) {
+      messages.push({
+        usuario: data['usuario'][i],
+        nome: data['nome'][i],
+        conteudo: data['conteudo'][i],
+        color: data['color'][i]
+      });
+  }
+
+  return messages;
+}
+
+function createRandomMessages() {
+  const messages = [];
   const colors = ['#FF69B4', '#FF4500', '#FFA500', '#FFD700', '#EE82EE',
     '#FF00FF', '#6A5ACD',  '#7CFC00', '#32CD32', '#00FF7F', '#00FFFF', '#1E90FF',
     '#A0522D', '#FFF0F5', '#696969', '#FF0000', '#B22222'
    ];
     
-    for (let i = 0; i < Object.keys(data.idchamado).length; i++) {
+    for (let i = 0; i < 5; i++) {
       let randomIndex = Math.floor(Math.random() * colors.length)
       messages.push({
-        id: crypto.randomUUID(),
-        nome: data['nomeUsuario'][i],
-        conteudo: data['assunto'][i],
+        usuario: crypto.randomUUID(),
+        nome: "Random User " + i,
+        conteudo: "Olá!",
         color: colors[randomIndex]
       });
   }
@@ -60,7 +74,16 @@ function Conversas({userData}){
     
     useEffect(() => {
       fetchData();
-    }, []);
+      const chatMessages = document.querySelector(".chatMessages")
+      if (tableData.length < 1){
+        const newUsers = createRandomMessages();
+        setTableData([...tableData, ...newUsers])
+      }
+      for (let i = 0; i < tableData.length; i++){
+        const element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
+        chatMessages.appendChild(element)
+      }
+    });
   
     const fetchData = async () => {
       try {
@@ -104,6 +127,7 @@ const handleLoadMessages = (event) => {
   event.preventDefault();
   /* Precisa alterar isso para pegar as mensagens de cada comunidade */
       
+  /*
   axios.get('http://127.0.0.1:5000/api/getMessages')
     .then(response => {
       console.log('Resposta do servidor:', response.data);
@@ -116,8 +140,7 @@ const handleLoadMessages = (event) => {
     .catch(error => {
       console.error('Erro ao enviar dados:', error);
     });
-
-  
+    */
  
 }
 
@@ -132,13 +155,34 @@ const handleLoadMessages = (event) => {
     const div = document.createElement('div');
     const span = document.createElement('span');
     div.classList.add('messageOther');
-    div.classList.add('messageUser');
+    span.classList.add('messageUser');
     span.style.color = userColor;
     div.appendChild(span);
     span.innerHTML = user;
     div.innerHTML += content;
     return div;
   }
+
+  /*  Formato de Mensagens no Chat
+  
+  <div className='messageSelf'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin enim et risus pharetra, in mattis tellus efficitur. Sed egestas enim viverra ante tincidunt eleifend. Etiam dui diam, imperdiet eu hendrerit a, facilisis nec arcu. Duis laoreet nulla et eleifend suscipit. Aenean pellentesque ornare volutpat. Curabitur quis faucibus velit, a lobortis tellus. Aliquam sit amet libero sed enim bibendum interdum.
+Maecenas non est varius, lacinia massa sed, congue turpis. Sed bibendum magna imperdiet commodo volutpat. Donec elementum diam tellus, vel hendrerit quam pretium vitae. Etiam aliquam justo sit amet pharetra maximus. Donec non odio nec purus aliquam malesuada. Ut finibus nulla tortor, et venenatis felis faucibus sed. </div> 
+  <div className='messageOther'>
+                <span className='messageUser'>{obj.usuario}</span>
+                {obj.content}
+              </div>
+
+ {
+  tableData.map((obj) => {
+    return (
+      <div className='messageOther'>
+        <span className='messageUser'>{obj.usuario}</span>
+        {obj.conteudo}
+      </div>
+    );
+  })
+  }
+*/
 
 
 
@@ -147,12 +191,7 @@ const handleLoadMessages = (event) => {
         <div className = "chatText">{comunidade.comunidade} Chat</div>
         <section className="chat">
           <section className="chatMessages">
-            <div className='messageSelf'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin enim et risus pharetra, in mattis tellus efficitur. Sed egestas enim viverra ante tincidunt eleifend. Etiam dui diam, imperdiet eu hendrerit a, facilisis nec arcu. Duis laoreet nulla et eleifend suscipit. Aenean pellentesque ornare volutpat. Curabitur quis faucibus velit, a lobortis tellus. Aliquam sit amet libero sed enim bibendum interdum.
-Maecenas non est varius, lacinia massa sed, congue turpis. Sed bibendum magna imperdiet commodo volutpat. Donec elementum diam tellus, vel hendrerit quam pretium vitae. Etiam aliquam justo sit amet pharetra maximus. Donec non odio nec purus aliquam malesuada. Ut finibus nulla tortor, et venenatis felis faucibus sed. </div>
-            <div className='messageOther'>
-              <span className='messageUser'>User</span>
-              Doidera.
-            </div>
+        
           </section>
           <form className="chatForm" onSubmit={handleSubmit}>
             <input 

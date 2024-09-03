@@ -4,7 +4,7 @@ import useStorage from '../utils/useStorage.js';
 
 const StoreProvider = ({ children }) => {
   const [token, setToken] = useStorage('token');
-  const [cpf, setCpf] = useStorage('cpf');
+  const [usuario, setUsuario] = useStorage('usuario');
   const [nome, setNome] = useStorage('nome');
   const [ comunidade, setComunidade] = useStorage('comunidade');
   const [color, setColor] = useStorage('color');
@@ -14,14 +14,14 @@ const StoreProvider = ({ children }) => {
       value={{
         token,
         setToken,
-        cpf,
-        setCpf,
         nome,
         setNome,
         comunidade,
         setComunidade,
         color,
-        setColor
+        setColor,
+        usuario,
+        setUsuario
       }}
     >
       {children}

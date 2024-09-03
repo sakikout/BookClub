@@ -3,14 +3,14 @@ import { createContext } from 'react';
 const StoreContext = createContext({
   token: null,
   setToken: () => {},
-  cpf: null,
-  setCpf: () => {},
   nome: null,
   setNome: () => {},
   comunidade: null,
   setComunidade: () => {},
   color: null,
-  setColor: () => {}
+  setColor: () => {},
+  usuario: null,
+  setUsuario: () => {}
 });
 
 export default StoreContext;

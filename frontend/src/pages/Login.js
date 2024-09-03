@@ -16,7 +16,7 @@ function Formulario({navigation}){
     const navigate = useNavigate()
     const [buttonPopup, setButtonPopup] = useState(false);
     const { setToken, token } = useContext(StoreContext);
-    const { setCpf, cpf } = useContext(StoreContext);
+    const { setUsuario, usuario } = useContext(StoreContext);
     const { setNome, nome } = useContext(StoreContext);
     const { setColor, color} = useContext(StoreContext);
 
@@ -52,7 +52,7 @@ function Formulario({navigation}){
         
         if(response.data.error != true){
             setToken({token: 1});
-            setCpf({cpf: response.data.cpf});
+            setUsuario({usuario: response.data.usuario});
             setNome({nome: response.data.nome});
             setColor({color: response.data.color})
             navigate("Home",  { replace: false });
@@ -69,7 +69,7 @@ function Formulario({navigation}){
         
         if (formData.login == '2001' && formData.senha == '123'){
           setToken({token: 1});
-          setCpf({cpf: "000.000.000-00"});
+          setUsuario({usuario: "jonhdoe01"});
           setNome({nome: "John Doe"});
           setColor({color: getRandomColor()})
           navigate("comunidades",  { replace: false });
@@ -155,9 +155,9 @@ function Formulario({navigation}){
                   Nome de Usuário
                 </label>
                 <input 
-                      name="cpf" 
+                      name="usuario" 
                       className='dadosUsers' 
-                      value={formData.cpf}
+                      value={formData.usuario}
                       onChange={handleInputChange} required />
               </div>
               </div>

@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Poppins:wght@200;500&family=Quicksand:wght@300;400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
 
+
 @font-face {
   font-family: Monserrat;
   src: url(../../fonts/montserrat/Montserrat-Light.otf)
@@ -24,17 +25,22 @@
     background: #ffffff;
   }
 
+  .community-item {
+    cursor: pointer;
+  }
 
 .form-all{
     height: 100%;
-    width: 100%;
+    width: 100dvh;
     background: #fff;
-    padding: 25px 40px 2px 0px;
+    padding: 25px 40px 20px 20px;
     box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
 }
   .mform{
     height: 100%;
-    top: 50px;
+    /* top: 50px; */
     /* width: 1250px; */
     margin-left: 70px;
     background: #fff;
@@ -46,7 +52,6 @@
   }
 
   .mform .text{
- 
     font-size: 22px;
     font-weight: 600;
     font-family: Monserrat;
@@ -54,6 +59,16 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  .text-title{
+    margin-top: 30px;
+    font-size: 22px;
+    font-weight: 600;
+    font-family: Monserrat;
+    background: #070707;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+ 
   .mform form{
     padding: 30px 0 0 0;
   }
@@ -473,6 +488,177 @@ h1 {
   display: flex;
 }
 
+.wrapper {
+  /* height: 30rem; */
+  transition: height 0.2s ease;
+}
+
+.wrapper.wrapper-active {
+  height: 20rem;
+}
+
+.post-header {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-pic {
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: green;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto 80%;
+  border-radius: 50%;
+}
+
+.profile-pic-comment {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: green;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto 80%;
+  border-radius: 50%;
+}
+
+.full-name {
+  margin-bottom: 0.3rem;
+}
+
+.submit-btn button {
+  outline: none;
+  border: none;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.75rem 0;
+  margin-top: 1rem;
+  font-family: 'Inter', sans-serif;
+  background-color: #3ddf3d;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.submit-btn button:hover {
+  background-color: rgba(39, 236, 72, 0.85);
+}
+
+.submit-btn button:disabled,
+.submit-btn button[disabled] {
+  cursor: not-allowed;
+  background-color: #e4e6eb;
+  color: #bdc1c5;
+}
+
+.postagem{
+  height: 100%;
+  width: 100dvh;
+  background: #fff;
+  padding: 25px 40px 20px 20px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  width: 100%;
+  border: none;
+  resize: none;
+  outline: none;
+  line-height: 1.25;
+}
+
+.post-content{
+  padding: 0rem 0rem 1.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.post-content-comment{
+  padding: 0rem 0rem 2.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-content {
+  font-size: medium;
+  color: #bdc1c5;
+}
+
+.post-bottom{
+  display: flex;
+  flex-direction: row;
+}
+
+.action{
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.action img{
+  width: 40px;
+  height: 40px;
+}
+
+.action span{
+  margin: 5px;
+}
+
+.action:hover{
+  margin: 5px;
+  animation: expander 1.0s;
+}
+
+
+.icons-heart:hover{
+  animation: expander 1.0s;
+
+}
+
+.notifications{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 30px 0px 0px 0px;
+}
+
+.notifications .notifications-left{
+  display: flex;
+  align-items: flex-start;
+
+}
+
+.notifications .notifications-right {
+  display: flex;
+  align-items: flex-end;
+}
+
+.notification{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.notification-main {
+  display: flex;
+  flex-direction: column;
+  margin: 0px 0px 1.0rem 1.0rem;
+}
+
+.notification-date {
+  margin: 10px;
+}
+
 @media screen and (min-width: 1460px){
   .mform{
  
@@ -536,6 +722,16 @@ h1 {
   
 }
 
+@media screen and (max-width: 1125px){
+  .form-all {
+    width: 80dvh;
+  }
+
+  .postagem {
+    width: 80dvh;
+  }
+}
+
 @media screen and (max-width: 1030px){
   .mform{
  
@@ -551,6 +747,24 @@ h1 {
     width: 60dvh;
   }
   
+}
+
+@media screen and (max-width: 915px){
+  .form-all {
+    width: 70dvh;
+  }
+  .postagem {
+    width: 70dvh;
+  }
+}
+
+@media screen and (max-width: 830px){
+  .form-all {
+    width: 50dvh;
+  }
+  .postagem {
+    width: 50dvh;
+  }
 }
 
 @media (max-width: 700px) {
@@ -577,6 +791,20 @@ h1 {
 
   .chatForm {
     width: 40dvh;
+  }
+}
+
+@media screen and (max-width: 530px){
+  .form-all {
+    width: 30dvh;
+  }
+  .postagem {
+    width: 30dvh;
+  }
+
+  .profile-pic {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 }
 
