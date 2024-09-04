@@ -35,12 +35,15 @@ const Home = ({userData}) => {
 
   return (
     <div className="main">
+
       { token ?
         <div>
         <Sidebar userData={userData} newMessage={ handleClick }></Sidebar>
         
         {state.message === 0 ?
-          <h2>Pagina Inicial</h2>
+          <div className="mform">
+            <h2 className="title">Pagina Inicial</h2>
+          </div>
         : ''}
 
         {state.message === 1 ?

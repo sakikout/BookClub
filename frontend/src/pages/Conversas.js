@@ -188,11 +188,14 @@ Maecenas non est varius, lacinia massa sed, congue turpis. Sed bibendum magna im
 
     return (
       <div className = "mform">
-        <div className = "chatText">{comunidade.comunidade} Chat</div>
+        <div className="topText">
+          <div className = "chatText">{comunidade.comunidade} Chat</div>
+        </div>
         <section className="chat">
           <section className="chatMessages">
         
           </section>
+          <div className="chatBackground">
           <form className="chatForm" onSubmit={handleSubmit}>
             <input 
             name= 'conteudo'
@@ -206,6 +209,7 @@ Maecenas non est varius, lacinia massa sed, congue turpis. Sed bibendum magna im
               <img src={sendImg} className='send-img' alt='send'></img>
             </button>
           </form>
+          </div>
         </section>
           
       </div>

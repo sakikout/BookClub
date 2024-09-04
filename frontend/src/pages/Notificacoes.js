@@ -14,6 +14,7 @@ function createRandomNotifications(count = 5) {
   
   for (let i = 0; i < count; i++) {
     notifications.push({
+      id: crypto.randomUUID(),
       usuario: crypto.randomUUID(),
       nome: "John Doe",
       tipo: "message",
@@ -24,6 +25,7 @@ function createRandomNotifications(count = 5) {
   }
 
   notifications.push({
+    id: crypto.randomUUID(),
     usuario: crypto.randomUUID(),
     nome: "Elon Musk",
     tipo: "comment",
@@ -106,7 +108,7 @@ const handleCreateNotifications = () => {
         {
           tableData.map((obj) => {
             return (
-              <div className="notification">
+              <div className="notification" key={obj.id}>
                 <div className="notifications-left">
                 <div className="profile-pic"></div>
                 <div className="notification-main">

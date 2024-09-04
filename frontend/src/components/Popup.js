@@ -1,5 +1,5 @@
 import React from "react";
-import closebtn from "../icons/close.png"
+import closebtn from "../icons/close-svgrepo.png"
 import './style/style.css'
 
 function Popup(props) {

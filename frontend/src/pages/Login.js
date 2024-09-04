@@ -55,7 +55,7 @@ function Formulario({navigation}){
             setUsuario({usuario: response.data.usuario});
             setNome({nome: response.data.nome});
             setColor({color: response.data.color})
-            navigate("Home",  { replace: false });
+            navigate("home",  { replace: false });
 
         } else {
           window.alert("Erro ao fazer login! verifique seu usuario e senha e tente novamente.");

@@ -35,7 +35,8 @@ function Sidebar ({userData, newMessage}) {
               width="70"
               height="70"
               className="img-logo"
-              />{' '}
+			  onClick={(event) => newMessage(event, 0)}
+			  />{' '}
 
 		<div className="options">
 			<span className="options-title">OPÇÕES</span>

@@ -111,24 +111,159 @@ function Configuracoes({userData}){
       
   }
 
+  const showOptions = (divName) => {
+    const element = document.querySelector("." + divName);
+    if (element.style.display === "none") {
+      element.style.display = "block";
+    } else {
+      element.style.display = "none";
+    }
+    
+  }
+
     return (
         <div className="mform">
+          <div className = "settings">
           <div className = "text-title">Configurações</div>
-          <div className="options">
+          <div className="options-settings">
             <div className="options-profile">
-              <div className="options-item">Alterar Usuário</div>
-              <div className="options-item">Alterar Nome</div>
-              <div className="options-item">Alterar Imagem de Perfil</div>
+              <div className="options-item-settings" onClick={() => showOptions("change-user")}>Alterar Usuário</div>
+              <div className="options-item-settings" onClick={() => showOptions("change-name")}>Alterar Nome</div>
+              <div className="options-item-settings" onClick={() => showOptions("change-image")}>Alterar Imagem de Perfil</div>
             </div>
 
             <div className="options-password">
-            <div className="options-item">Alterar Senha</div>
+            <div className="options-item-settings" onClick={() => showOptions("change-password")}>Alterar Senha</div>
             </div>
             <div className="options-delete">
-              <div className="options-item">Deletar Conta</div>
+              <div className="options-item-settings" onClick={() => showOptions("change-account")}>Deletar Conta</div>
+            </div>
+          </div>
+          </div>
+
+          <div className="change-user">
+            <div className="container-options">
+            <div className="text">Alterar Usuário</div>
+          <form onSubmit={handleSubmitModal}>
+            <div class="form-row-options">
+              <div class = "input-options">
+                <label className='optionsLabel' for="usuario">
+                Novo Usuário:
+                </label>
+                <input 
+                      name="usuario" 
+                      className='dadosUsers' 
+                      value={formData.usuario}
+                      onChange={handleInputChange} required />
+              </div>
+              </div>
+              <button className= "submit-btn" 
+              type = "submit"
+             >Atualizar</button>
+              </form> 
+              <span className="request-status"></span>
+              </div>
+          </div>
+
+          <div className="change-name">
+            <div className="container-options">
+            <div className="text">Alterar Nome</div>
+            <form onSubmit={handleSubmitModal}>
+            <div class="form-row-options">
+            <div class="input-options">
+                <label className='optionsLabel' for="nome">
+                  Novo Nome:
+                </label>
+                <input 
+                      name="nome" 
+                      className='dadosUsers' 
+                      value={formData.nome}
+                      onChange={handleInputChange} required/>
+              </div>
+              </div>
+              <button className= "submit-btn" 
+              type = "submit"
+             >Atualizar</button>
+            </form>
+            <span className="request-status"></span>
+            </div>
+          </div>
+
+          <div className="change-image">
+            <div className="container-options">
+            <div className="text">Alterar Imagem de Perfil</div>
+            <form onSubmit={handleSubmitModal}>
+            <div class="form-row-options">
+            <div class="input-options-image">
+                <label className='optionsLabel' for="avatar">
+                </label>
+                <input 
+                      name="avatar"
+                      type="file" 
+                      className='dadosUsers' 
+                      value={formData.avatar}
+                      accept="image/png, image/jpeg"
+                      onChange={handleInputChange} required/>
+              </div>
+              </div>
+              <button className= "submit-btn" 
+              type = "submit"
+             >Atualizar</button>
+            </form>
+            <span className="request-status"></span>
+            </div>
+          </div>
+
+          <div className="change-password">
+            <div className="container-options">
+            <div className="text">Alterar Senha</div>
+            <form onSubmit={handleSubmitModal}>
+            <div class="form-row-options">
+                <div class = "input-options">
+                  <label className='optionsLabel' for="senha">
+                    Nova Senha:
+                  </label>
+                  <input 
+                      name="senha" 
+                      className='dadosUsers' 
+                      value={formData.senha}
+                      onChange={handleInputChange} required />
+                  </div>
+                </div>
+              <button className= "submit-btn" 
+              type = "submit"
+             >Atualizar</button>
+            </form>
+            <span className="request-status"></span>
+            </div>
+          </div>
+
+          <div className="change-account">
+            <div className="container-options">
+            <div className="text">Deletar Conta</div>
+            <form onSubmit={handleSubmitModal}>
+            <div class="form-row-options">
+                <div class = "input-options">
+                  <label className='optionsLabel' for="senha">
+                    Insira sua senha:
+                  </label>
+                  <input 
+                      name="senha" 
+                      className='dadosUsers' 
+                      value={formData.senha}
+                      onChange={handleInputChange} required />
+                  </div>
+                </div>
+              <button className= "submit-btn" 
+              type = "submit"
+             >Deletar</button>
+            </form>
+            <span className="request-status"></span>
             </div>
           </div>
         </div>
+
+
   );
 }
 
