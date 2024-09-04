@@ -55,41 +55,23 @@ def inserir_db(sql):
 def send_data():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
-    login = data['login']
+    login = data['usuario']
     senha = data['senha']
-    reg = consultar_db('select cpfop, opnome from public.operador where cpfop = \'' + login +'\' and senhaop = '+ str(senha))
-    ger = consultar_db('select cpfge, gernome from public.gerente where cpfge = \'' + login +'\' and senhager = '+ str(senha))
-    rep = consultar_db('select cpfrep, repnome from public.repositor where cpfrep = \'' + login +'\' and senharep = '+ str(senha))
+    reg = consultar_db('select usuario, nome from public.operador where usuario = \'' + login +'\' and senha = '+ str(senha))
     print("Dados banco:", reg)
     if(len(reg) > 0):
-        df_bd = pd.DataFrame(reg, columns=['cpfop', 'opnome'])
+        df_bd = pd.DataFrame(reg, columns=['usuario', 'nome'])
         df_bd.head()
         df_bd = df_bd.to_dict()
         data = {'error': False,
                 'option': 1,
-                'cpfop': df_bd['cpfop'][0],
-                'opnome': df_bd['opnome'][0]}
+                'usuario': df_bd['usuario'][0],
+                'nome': df_bd['nome'][0]}
         result = 0
-    elif(len(ger) > 0):
-        df_bd = pd.DataFrame(ger, columns=['cpfge', 'gernome'])
-        df_bd.head()
-        df_bd = df_bd.to_dict()
-        data = {'error': False,
-                'option': 2,
-                'cpfge': df_bd['cpfge'][0],
-                'gernome': df_bd['gernome'][0]}
-    elif(len(rep) > 0):
-        df_bd = pd.DataFrame(rep, columns=['cpfrep', 'repnome'])
-        df_bd.head()
-        df_bd = df_bd.to_dict()
-        data = {'error': False,
-                'option': 3,
-                'cpfrep': df_bd['cpfrep'][0],
-                'repnome': df_bd['repnome'][0]}
     else:
        df_bd = {}
        data = {'error': True,
-               'mensage': 'Não foi possivel encontrar o funcionario'}
+               'mensage': 'Não foi possivel encontrar o usuário'}
     return data
 
 @app.route('/api/criaEncomenda', methods=['POST'])
