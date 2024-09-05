@@ -5,16 +5,64 @@ import StoreContext from '../components/Store/Context';
 import Popup from '../components/Popup';
 import axios from 'axios';
 
+function createRandomPosts() {
+  const posts = [];
+  var d = new Date();
 
-function createRandomUsers(data) {
-  const users = [];
-  
-  for (let i = 0; i < Object.keys(data).length; i++) {
-    users.push(data[i]);
-  }
+  posts.push({
+    id: crypto.randomUUID(),
+    usuario: "johndoe01",
+    nome: "John Doe",
+    conteudo: "Baniram o Twitter :(",
+    data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear(),
+    comentarios: [
+      {
+      id: crypto.randomUUID(),
+      usuario: "marysue10000",
+      nome: "Mary Sue",
+      conteudo: "Paia né!",
+      data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+      },
+      {
+        id: crypto.randomUUID(),
+        usuario: "elonmusk24",
+        nome: "Elon Musk",
+        conteudo: "I'm sorry brazilians",
+        data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+        }
+    ],
+    curtidas: 1
+  });
 
-  return users;
+  posts.push({
+    id: crypto.randomUUID(),
+    usuario: "johndoe01",
+    nome: "John Doe",
+    conteudo: "Não aguento mais!",
+    data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear(),
+    comentarios: [
+      {
+      id: crypto.randomUUID(),
+      usuario: "marysue10000",
+      nome: "Mary Sue",
+      conteudo: "Eu também não.",
+      data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+      },
+      {
+        id: crypto.randomUUID(),
+        usuario: "elonmusk24",
+        nome: "Elon Musk",
+        conteudo: "Can you guys speak in English?",
+        data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+        }
+    ],
+    curtidas: 2
+  });
+
+
+  return posts;
 }
+
 
 function Configuracoes({userData}){
   const [tableData, setTableData] = useState([]);
@@ -63,13 +111,13 @@ function Configuracoes({userData}){
 
   const handleSubmitModal = (event) => {
     event.preventDefault();
-    console.log(formData.cpf);
+    console.log(formData.usuario);
 
     axios.post('http://127.0.0.1:5000/api/criaUsario', formData)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setButtonPopup(false);
-        handleGetUsers(event)
+        handleGetPosts(event)
 
       })
       .catch(error => {
@@ -79,13 +127,13 @@ function Configuracoes({userData}){
 
   const handleSubmitDelete = (event) => {
     event.preventDefault();
-    console.log(formData.cpf);
+    console.log(formData.usuario);
 
     axios.post('http://127.0.0.1:5000/api/deletaUsuario', formData)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setDeletePopup(false);
-        handleGetUsers(event)
+        handleGetPosts(event)
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -93,22 +141,66 @@ function Configuracoes({userData}){
 
       
   }
-
-  const handleGetUsers = (event) => {
-      
+  const handleSubmitDeletePost = (event, obj) => {
     event.preventDefault();
-    
-    
-    axios.get('http://127.0.0.1:5000/api/getUsuarios')
+    console.log(formData.usuario);
+
+    axios.post('http://127.0.0.1:5000/api/deletaPublicacao', obj)
       .then(response => {
-        console.log('Resposta do servidor:', response.data);          
-        const table = createRandomUsers(response.data)
-        setTableData([...table])
+        console.log('Resposta do servidor:', response.data);
+        handleGetPosts(event)
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+
+      
+  }
+  const handleGetPosts = (event) => {
+
+    event.preventDefault();
+    axios.get('http://127.0.0.1:5000/api/getPublicacoesUsuario')
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);     
+        const table = createRandomPosts(response.data)
+        setTableData([...table])     
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
       
+  }
+
+  const handleLoadPosts = () => {
+    const posts = [];
+
+    posts.push({
+      id: crypto.randomUUID(),
+      usuario: "johndoe01",
+      nome: "John Doe",
+      conteudo: "Baniram o Twitter :(",
+      data: Date.now(),
+      comentarios: [
+        {
+        id: crypto.randomUUID(),
+        usuario: "marysue10000",
+        nome: "Mary Sue",
+        conteudo: "Paia né!",
+        data: Date.now()
+        },
+        {
+          id: crypto.randomUUID(),
+          usuario: "elonmusk24",
+          nome: "Elon Musk",
+          conteudo: "I'm sorry brazilians",
+          data: Date.now()
+          }
+      ],
+      curtidas: 1
+    });
+
+    const dados_post = createRandomPosts()
+    setTableData([...dados_post])   
   }
 
   const showOptions = (divName) => {
@@ -118,8 +210,11 @@ function Configuracoes({userData}){
     } else {
       element.style.display = "none";
     }
-    
+    if (divName === "delete-post"){
+      handleLoadPosts();
+    }
   }
+
 
     return (
         <div className="mform">
@@ -136,6 +231,7 @@ function Configuracoes({userData}){
             <div className="options-item-settings" onClick={() => showOptions("change-password")}>Alterar Senha</div>
             </div>
             <div className="options-delete">
+            <div className="options-item-settings" onClick={() => showOptions("delete-post")}>Deletar Publicação</div>
               <div className="options-item-settings" onClick={() => showOptions("change-account")}>Deletar Conta</div>
             </div>
           </div>
@@ -234,6 +330,30 @@ function Configuracoes({userData}){
               type = "submit"
              >Atualizar</button>
             </form>
+            <span className="request-status"></span>
+            </div>
+          </div>
+
+          <div className="delete-post" onLoad={handleGetPosts}>
+            <div className="container-options">
+            <div className="text">Deletar Publicação</div>
+            <div className="post">
+            { tableData.map( (obj) => {
+              return (
+              <form onSubmit={() => handleSubmitDeletePost(obj)} key={obj.key}>
+                <div className="post-data">{obj.data}</div>
+                <div className="post-content">Conteúdo: {obj.conteudo}</div>
+                <div className="post-likes">Likes: {obj.curtidas}</div>
+
+              <button className= "submit-btn-delete" 
+                      type = "submit"
+              >Deletar</button>
+              </form>
+              
+            )})
+            }
+
+            </div>
             <span className="request-status"></span>
             </div>
           </div>

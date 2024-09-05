@@ -8,17 +8,43 @@ import Popup from '../components/Popup'
 import bubble from "../icons/bubble-green.png";
 import greenHeart from "../icons/heart-green.png";
 import pinkHeart from "../icons/pink-heart.png";
+import deleteButton from "../icons/delete.png";
 
 
 function createRandomPosts(count = 5) {
   const posts = [];
+
+  posts.push({
+    id: crypto.randomUUID(),
+    usuario: "johndoe01",
+    nome: "John Doe",
+    conteudo: "Baniram o Twitter :(",
+    data: Date.now(),
+    comentarios: [
+      {
+      id: crypto.randomUUID(),
+      usuario: "marysue10000",
+      nome: "Mary Sue",
+      conteudo: "Paia né!",
+      data: Date.now()
+      },
+      {
+        id: crypto.randomUUID(),
+        usuario: "elonmusk24",
+        nome: "Elon Musk",
+        conteudo: "I'm sorry brazilians",
+        data: Date.now()
+        }
+    ],
+    curtidas: 1
+  });
   
   for (let i = 0; i < count; i++) {
     posts.push({
       id: crypto.randomUUID() + i,
       usuario: crypto.randomUUID(),
       nome: "user" + (i * 31124),
-      conteudo: "Hellow World!",
+      conteudo: "Hello World!",
       data: Date.now(),
       comentarios: [
         {
@@ -39,6 +65,7 @@ function createRandomPosts(count = 5) {
       curtidas: 2
     });
   }
+
 
   return posts;
 }
@@ -139,6 +166,7 @@ const handleInputChangeComment = (event) => {
     setActivePost(post)
     setButtonPopup(true);
     console.log(post)
+
     /*
     <div class="post-header"> 
       <div class="profile-pic-comment"></div> 
@@ -162,6 +190,9 @@ const handleInputChangeComment = (event) => {
       </div>
 
     */
+  }
+  const deletePost = (obj) => {
+    console.log("Você quer deletar o post de id " + obj.id + " do usuario " + obj.nome);
   }
 
   const handleSubmitComment = (event) => {
@@ -224,7 +255,7 @@ const handleInputChangeComment = (event) => {
                    <div class="user-info"> 
                       <div class="full-name">{obj.nome}</div> 
                       <div class="username">@{obj.usuario}</div>
-                    </div>
+                    </div> 
               </div>
               <div className="post-content">
                 <div className="user-content">

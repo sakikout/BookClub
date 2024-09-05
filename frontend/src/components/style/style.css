@@ -688,7 +688,7 @@ textarea {
   margin: 10px;
 }
 
-.change-user, .change-password, .change-name, .change-image, .change-account{
+.change-user, .change-password, .change-name, .change-image, .change-account, .delete-post{
   display: none;
 }
 
@@ -710,7 +710,9 @@ textarea {
   align-items: flex-start;
 }
 
-
+.post form {
+  justify-content: space-evenly;
+}
 .container-options .text {
   margin-top: 10px;
 }
@@ -736,6 +738,10 @@ textarea {
   height: 3dvh;
 }
 
+.post-likes{
+  padding: 0px 0px 0px 10px;
+}
+
 .input-options-image input {
   margin-top: 2rem;
 }
@@ -748,6 +754,21 @@ textarea {
   flex-direction: row;
 }
 
+.submit-btn-delete{
+  outline: none;
+  border: none;
+  width: 10dvh;
+  height: 1.5dvh;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.75rem 0;
+  margin-left: 15px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  background-color: #f0c85c;
+  color: #ffffff;
+  font-size: 0.8rem;
+}
 .container-options form .submit-btn{
   outline: none;
   border: none;

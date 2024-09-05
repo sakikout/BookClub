@@ -46,7 +46,7 @@ const Home = ({userData}) => {
           </div>
         : ''}
 
-        {state.message === 1 ?
+        {state.message === 1 || state === 0 ?
           <Publicacoes userData={userData}></Publicacoes>
           
         : ''}
