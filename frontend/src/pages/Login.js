@@ -112,7 +112,7 @@ function Formulario({navigation}){
         <form onSubmit={handleSubmit}>
             <div className='form'>
   
-                <label>
+                <label className="loginLabel">
                     Login:<br/>
                     <input 
                         name="login" 
@@ -120,7 +120,7 @@ function Formulario({navigation}){
                         value={formData.login}
                         onChange={handleInputChange} />
                 </label>
-                <label>
+                <label className="senhaLoginLabel">
                     Senha:<br/>
                     <input 
                         name="senha" 

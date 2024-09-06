@@ -69,6 +69,16 @@ label {
   color: #ffff;
 }
 
+.senhaLoginLabel{
+  display: flex;
+  flex-direction: column;
+}
+
+.loginLabel{
+  display: flex;
+  flex-direction: column;
+}
+
 .form {
   display: ruby-text;
  /* 
