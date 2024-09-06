@@ -74,25 +74,19 @@ function Conversas({userData}){
     
     useEffect(() => {
       fetchData();
-      const chatMessages = document.querySelector(".chatMessages")
-      if (tableData.length < 1){
-        const newUsers = createRandomMessages();
-        setTableData([...tableData, ...newUsers])
-      }
-      for (let i = 0; i < tableData.length; i++){
-        const element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
-        chatMessages.appendChild(element)
-      }
     });
   
     const fetchData = async () => {
       try {
-        /*
-        const response = await fetch("https://cities-qd9i.onrender.com/agents");
-        const agents = await response.json();
-        
-        setTableData(agents);
-        */
+        const chatMessages = document.querySelector(".chatMessages")
+        if (tableData.length < 1){
+          const newUsers = createRandomMessages();
+          setTableData([...tableData, ...newUsers])
+        }
+        for (let i = 0; i < tableData.length; i++){
+          const element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
+          chatMessages.appendChild(element)
+        }
        console.log(tableData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -102,7 +96,7 @@ function Conversas({userData}){
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    axios.post('http://127.0.0.1:5000/api/enviaMensagem', formData)
+    axios.post('http://127.0.0.1:5000/api/criarMensagem', formData)
     .then(response => {
       console.log('Resposta do servidor:', response.data);
       setDeletePopup(false);
@@ -116,6 +110,8 @@ function Conversas({userData}){
     console.log(nome)
     console.log(color)
 
+    // all lines below in this function will be deleted when the backend works
+
     const elementSelf = createMessageSelfElement(formData.conteudo)
     const chatMessages = document.querySelector(".chatMessages")
     chatMessages.appendChild(elementSelf)
@@ -125,9 +121,7 @@ function Conversas({userData}){
 
 const handleLoadMessages = (event) => {
   event.preventDefault();
-  /* Precisa alterar isso para pegar as mensagens de cada comunidade */
-      
-  /*
+  
   axios.get('http://127.0.0.1:5000/api/getMessages')
     .then(response => {
       console.log('Resposta do servidor:', response.data);
@@ -140,11 +134,12 @@ const handleLoadMessages = (event) => {
     .catch(error => {
       console.error('Erro ao enviar dados:', error);
     });
-    */
+  
  
 }
 
   const createMessageSelfElement = (content) => {
+     // it will be deleted when the backend works.
     const div = document.createElement('div')
     div.classList.add('messageSelf')
     div.innerHTML = content
@@ -152,6 +147,7 @@ const handleLoadMessages = (event) => {
   }
 
   const createMessageOtherElement = (content, user, userColor) => {
+    // it will be deleted when the backend works.
     const div = document.createElement('div');
     const span = document.createElement('span');
     div.classList.add('messageOther');

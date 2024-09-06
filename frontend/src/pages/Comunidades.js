@@ -14,7 +14,7 @@ function Comunidades({navigation}){
     const { setNome, nome } = useContext(StoreContext);
     const {comunidade, setComunidade} = useContext(StoreContext);
 
-   const communities = [{id: 0, name: "Harry Potter"}, {id: 1, name: "Game of Thrones"}, {id: 2, name: "Bridgerton"}] 
+   const communities = [{id: 0, name: "Harry Potter", img: "https://m.media-amazon.com/images/I/81q77Q39nEL._SL1500_.jpg"}, {id: 1, name: "Game of Thrones", img:'https://m.media-amazon.com/images/I/71r9CosD5QL._SL1500_.jpg'}, {id: 2, name: "Bridgerton", img:'https://cdn.kobo.com/book-images/10ab6c9c-0a1d-4899-9dff-f29bab76774c/353/569/90/False/bridgerton-collection-volume-1.jpg'}] 
 
     const entrouNaComunidade = (community) => {
         console.log("Entrou na comunidade: " + community.name + " " + community.id);
@@ -68,14 +68,17 @@ function Comunidades({navigation}){
         <div className="bg bg3"></div>
         <div className='content'>
         <div className="communities-list">
-            <ul>
                 {communities.map((community) => (
                     <div className="community-item" key={community.id} onClick={() => entrouNaComunidade(community)}>
-                        {community.name}
+                      <div className="community-card">
+                        <div className="community-img">
+                          <img src={community.img} alt={community.name}></img>
+                        </div>
+                        <span className='community-name'>{community.name}</span>
+                      </div>
                     </div>
                 ))}
-            </ul>
-
+        
         </div>
         </div>
       </div>

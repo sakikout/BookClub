@@ -77,7 +77,7 @@ def create_usuario():
     img = usuario['avatar']
     desc = usuario['descricao']
     color = usuario['color']
-    inserir_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + ', avatar: "' + img + '", descricao: "' + desc +  '", color: "'+ color +'"})')
+    inserir_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + ', avatar: "' + img + '", descricao: "' + desc +  '", cor: "'+ color +'"})')
    
     return usuario
 
@@ -91,7 +91,7 @@ def delete_usuario():
     return usuario
 
 @app.route('/api/getUsuarios', methods=['GET'])
-def get_usuario():
+def get_usuarios():
     user = consultar_db('MATCH (n:Usuario) RETURN n')
     df_bd1 = pd.DataFrame(user, columns=['usuario', 'nome', 'senha', 'descricao', 'avatar', 'cor'])
     df_bd1.head()
@@ -147,7 +147,7 @@ def set_usuario():
    
     return usuario
 
-@app.route('/api/criaPublicacao', methods=['POST'])
+@app.route('/api/criarPublicacao', methods=['POST'])
 def create_publicacao():
     post = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", post)
@@ -161,7 +161,7 @@ def create_publicacao():
    
     return post
 
-@app.route('/api/criaCurtida', methods=['POST'])
+@app.route('/api/criarCurtida', methods=['POST'])
 def create_curtida():
     post = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", post)
@@ -172,7 +172,7 @@ def create_curtida():
    
     return post
 
-@app.route('/api/criaComentario', methods=['POST'])
+@app.route('/api/criarComentario', methods=['POST'])
 def create_comentario():
     post = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", post)
@@ -185,6 +185,46 @@ def create_comentario():
     inserir_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}]->(p:Publicacao)')
    
     return post
+
+@app.route('/api/criarMensagem', methods=['POST'])
+def create_mensagem():
+    message = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", message)
+    id_message = message['id']
+    comunidade = message['comunidade']
+    usuario= message['usuario']
+    conteudo = message['conteudo']
+    date = message['data']
+    color = consultar_db('MATCH (n:Usuario) WHERE n.usuario = "' + usuario + '" RETURN n.cor')
+
+    inserir_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"})')
+    inserir_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"}-[:TEM_CONVERSA]->(n:Conversa) CREATE (m:Mensagem {id: "'+ id_message +'"}-[:EM]->(n)')
+
+    return message
+
+@app.route('/api/getMensagens', methods=['GET'])
+def get_mensagens():
+    data_received = request.json  # Os dados do formulário serão enviados como JSON
+    comunidade = data_received['comunidade']
+    message = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"}))-[:TEM_CONVERSA]->(n:Conversa)<-[:EM]-(m:Mensagem) RETURN m')
+    df_bd1 = pd.DataFrame(message, columns=['id', 'usuario', 'conteudo', 'data', 'cor'])
+    df_bd1.head()
+    df_bd1 = df_bd1.to_dict()
+    print("Dados banco:", df_bd1)
+    dict_messages = []
+    
+    for i in range(len(df_bd1['id'])):
+    #for operador in df_bd1:
+        dict_messages.append({
+            'usuario': df_bd1['usuario'][i],
+            'conteudo': df_bd1['conteudo'][i],
+            'data': df_bd1['data'][i],
+            'cor': df_bd1['cor'][i]
+        })
+        
+    print("Dados retorno:", dict_messages)
+    return json.dumps(dict_messages)
+
 
 # Running app
 if __name__ == '__main__':

@@ -27,6 +27,33 @@
 
   .community-item {
     cursor: pointer;
+    padding: 10px
+  }
+  
+  .community-item:hover {
+    animation: expander 1.0s;
+  }
+
+  .community-name {
+    visibility: hidden;
+  }
+
+  .community-card {
+    width: 23dvh;
+  }
+
+  .community-img {
+    width: 50px; 
+    height: 300px; 
+    display: flex;
+  }
+
+  .communities-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
   }
 
 .form-all{

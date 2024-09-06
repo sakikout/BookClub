@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/style/style.css'
 import StoreContext from '../components/Store/Context';
@@ -8,8 +7,11 @@ import Popup from '../components/Popup'
 import bubble from "../icons/bubble-green.png";
 import greenHeart from "../icons/heart-green.png";
 import pinkHeart from "../icons/pink-heart.png";
-import deleteButton from "../icons/delete.png";
 
+function getDateNow(){
+  var d = new Date();
+  return d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+}
 
 function createRandomPosts(count = 5) {
   const posts = [];
@@ -19,24 +21,35 @@ function createRandomPosts(count = 5) {
     usuario: "johndoe01",
     nome: "John Doe",
     conteudo: "Baniram o Twitter :(",
-    data: Date.now(),
+    data: getDateNow(),
     comentarios: [
       {
       id: crypto.randomUUID(),
       usuario: "marysue10000",
       nome: "Mary Sue",
       conteudo: "Paia né!",
-      data: Date.now()
+      data: getDateNow()
       },
       {
         id: crypto.randomUUID(),
         usuario: "elonmusk24",
         nome: "Elon Musk",
         conteudo: "I'm sorry brazilians",
-        data: Date.now()
-        }
+        data: getDateNow()
+        },
+        {
+          id: crypto.randomUUID(),
+          usuario: "johndoe01",
+          nome: "John Doe",
+          conteudo: "Libera pra nós de novo",
+          data: getDateNow()
+          },
     ],
-    curtidas: 1
+    curtidas: [ 
+      {
+      usuario: "marysue10000"
+      }
+    ]
   });
   
   for (let i = 0; i < count; i++) {
@@ -45,24 +58,29 @@ function createRandomPosts(count = 5) {
       usuario: crypto.randomUUID(),
       nome: "user" + (i * 31124),
       conteudo: "Hello World!",
-      data: Date.now(),
+      data: getDateNow(),
       comentarios: [
         {
         id: crypto.randomUUID() + i + 12,
         usuario: "marysue10000",
         nome: "Mary Sue",
         conteudo: "Oi!",
-        data: Date.now()
+        data: getDateNow()
         },
         {
           id: crypto.randomUUID() + i + 10,
           usuario: "elonmusk24",
           nome: "Elon Musk",
           conteudo: "Kekw",
-          data: Date.now()
+          data: getDateNow()
           }
       ],
-      curtidas: 2
+      curtidas: [ 
+        {
+        usuario: "marysue10000"
+        },
+        { usuario: "elonmusk24" }
+      ]
     });
   }
 
@@ -73,25 +91,24 @@ function createRandomPosts(count = 5) {
 function Publicacoes({userData}){
   const [buttonPopup, setButtonPopup] = useState(false);
   const [activePost, setActivePost] = useState('');
-  const navigate = useNavigate();
   const [tableData, setTableData] = useState([]);
-  const { setToken, token } = useContext(StoreContext);
   const { setUsuario, usuario } = useContext(StoreContext);
   const { setComunidade, comunidade } = useContext(StoreContext);
   const { setNome, nome } = useContext(StoreContext);
 
-
   const[formData, setPost] = useState({
-    usuario: usuario,
-    data: Date.now(),
+    id: crypto.randomUUID(),
+    usuario: usuario.usuario,
+    data: getDateNow(),
     conteudo: '',
     comentarios: [],
-    curtidas: 0
+    curtidas: []
   });
 
   const[formComment, setComment] = useState({
-    usuario: usuario,
-    data: Date.now(),
+    id: '',
+    usuario: usuario.usuario,
+    data: getDateNow(),
     conteudo: '',
   });
 
@@ -113,8 +130,10 @@ const handleInputChangeComment = (event) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    console.log(formData);
     
-    axios.post('http://127.0.0.1:5000/api/publicarPostagem', formData)
+    axios.post('http://127.0.0.1:5000/api/criarPostagem', formData)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         window.alert("Entrada no caixa feita com sucesso!");
@@ -146,10 +165,12 @@ const handleInputChangeComment = (event) => {
     setTableData([...tableData, ...newUsers])
 }
 
-  const changeHeartColor = (obj, className) => {
+  const sendLike = (obj, className) => {
     const element = document.querySelector(className);
     console.log(element)
     console.log("Curtiu o post de " + obj.nome)
+
+    // Trocar a cor do coração
     if (element){
         if (element.src === greenHeart){
       element.src = pinkHeart;
@@ -157,48 +178,46 @@ const handleInputChangeComment = (event) => {
       element.src = greenHeart;
     }
     }
-  
+
+    const data = {
+      id: obj.id,
+      usuario: usuario.usuario.value
+    }
+
+    // obj.curtidas.append({usuario: usuario.usuario});
+
+    axios.post('http://127.0.0.1:5000/api/criarCurtida', data)
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);
+        window.alert("Entrada no caixa feita com sucesso!");
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+  };
     
-  }
+    
 
   const commentPost = (post) => {
     console.log("Comentar no post de " + post.nome)
     setActivePost(post)
     setButtonPopup(true);
-    console.log(post)
-
-    /*
-    <div class="post-header"> 
-      <div class="profile-pic-comment"></div> 
-          <div class="user-info-comment"> 
-            <div class="full-name">{comment.nome}</div> 
-            <div class="username">@{comment.usuario}</div>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="input-data">
-        <textarea 
-          name="conteudo" 
-          className='conteudoForm' 
-          value={formData.conteudo}
-          onChange={handleInputChange}
-          placeholder={'O que está acontecendo?'}/>
-        </div>
-      </div>     
-      <div class="form-row submit-btn">
-        <button type="submit" value="submit">Publicar</button>
-      </div>
-
-    */
-  }
-  const deletePost = (obj) => {
-    console.log("Você quer deletar o post de id " + obj.id + " do usuario " + obj.nome);
-  }
+  };
 
   const handleSubmitComment = (event) => {
     event.preventDefault();
+    const data = {
+      idPost: activePost.id,
+      id: crypto.randomUUID(),
+      usuario: formComment.usuario,
+      conteudo: formComment.conteudo,
+      data: formComment.data
+    }
+
+    console.log("Comentário a ser enviado: ");
+    console.log(data);
     
-    axios.post('http://127.0.0.1:5000/api/publicarComentario', formData)
+    axios.post('http://127.0.0.1:5000/api/criarComentario', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         window.alert("Entrada no caixa feita com sucesso!");
@@ -267,12 +286,16 @@ const handleInputChangeComment = (event) => {
               </div>
               <div className="post-bottom">
                 <div className="action">
-                  <img src={greenHeart} className= {'icons-heart' + obj.id} alt="Coração"></img>
-                  <span key={obj.id} onClick={() => changeHeartColor(obj, ('icons-heart' + obj.id))}>Curtir</span>
+                  <img src={greenHeart} className= {'icons-heart' + obj.id} alt="Coração"
+                  onClick={() => sendLike(obj, ('icons-heart' + obj.id))}></img>
+                  <span key={obj.id}>
+                    {obj.curtidas.length}
+                  </span>
                 </div>
                 <div className="action">
-                <img src={bubble} className='icons' alt="Bolha de comentário"></img>
-                <span onClick={() =>  commentPost(obj)}>Comentar</span>
+                <img src={bubble} className='icons' alt="Bolha de comentário"
+                onClick={() =>  commentPost(obj)}></img>
+                <span>{obj.comentarios.length}</span>
                 </div>
                 </div>
                 <div className="comments">
