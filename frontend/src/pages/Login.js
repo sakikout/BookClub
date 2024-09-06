@@ -179,7 +179,7 @@ function Formulario({navigation}){
               </div>
               <button className= "modalButton" 
               type = "submit"
-             >Atualizar</button>
+             >Criar</button>
               </form> 
           </div>
         </PopupSignIn>
