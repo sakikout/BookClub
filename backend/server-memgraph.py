@@ -122,7 +122,7 @@ def get_usuarios():
     print("Dados retorno:", dict_users)
     return json.dumps(dict_users)
 
-@app.route('/api/getComunidadesUsuario', methods=['GET'])
+@app.route('/api/getComunidadesUsuario', methods=['POST'])
 def get_comunidades_de_usuario():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
@@ -143,7 +143,7 @@ def get_comunidades_de_usuario():
     print("Dados retorno:", dict_communities)
     return json.dumps(dict_communities)
 
-@app.route('/api/sairComunidade', methods=['GET'])
+@app.route('/api/sairComunidade', methods=['POST'])
 def sair_de_comunidade():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
