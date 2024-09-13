@@ -5,7 +5,25 @@ A simple social network project in React.js.
 The main objective is to create a distributed system for using a NoSQL database. In this project, we are using a graph-oriented database, MemGraph.
 
 ## Requirements
-Backend (Python server)
+
+### MemGraph
+Para instalar o MemGraph é necessário primeiramente intalar o *Docker* e, em seguida, rodar o seguinte comando no *Power Shell*:
+
+Windows
+``` bash
+iwr https://windows.memgraph.com | iex
+````
+
+Linux/Mac
+``` bash
+curl https://install.memgraph.com | sh
+````
+
+Após isso você pode encontra-lo em http://localhost:3000
+Basta clicar no botão para conectar 
+
+
+###Backend (Python server)
 ``` bash
 Flask==2.3.3
 Flask-Cors==4.0.0
@@ -15,7 +33,7 @@ neo4j==5.24.0
 ````
 Caso tenha algum problema, todos podem ser instalados usando o comando `pip install ...`
 
-Frontend
+###Frontend
 ``` bash
 "axios": "^1.6.5",
 "bootstrap": "^5.3.2",
@@ -32,22 +50,9 @@ Frontend
 "web-vitals": "^2.1.4"
 ````
 Caso tenha algum problema, todos podem ser instalados usando o comando `npm install ...`
-### MemGraph
 
-Para instalar o MemGraph é necessário rodar o seguinte comando no *Power Shell*:
 
-Windows
-``` bash
-iwr https://windows.memgraph.com | iex
-````
 
-Linux/Mac
-``` bash
-curl https://install.memgraph.com | sh
-````
-
-Após isso você pode encontra-lo em http://localhost:3000
-Basta clicar no botão para conectar 
 
 ## Running the application
 Backend:

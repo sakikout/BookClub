@@ -42,10 +42,12 @@ def consultar_db(consulta):
 def send_data():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
-    login = data['usuario']
+    login = data['login']
     senha = data['senha']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + login + '"}) WHERE n.senha = "' + str(senha)+ '"')
-    print("Dados banco:", reg)
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + login + '", senha: "' + str(senha)+ '"}) RETURN n.nome AS nome, n.usuario AS usuario')
+    print("Dados banco:")
+    for record in reg:
+        print(record["nome"])
     if(len(reg) > 0):
         df_bd = pd.DataFrame(reg, columns=['usuario', 'nome'])
         df_bd.head()
@@ -67,11 +69,12 @@ def create_usuario():
     username = usuario['usuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
-    desc = usuario['descricao']
-    color = usuario['color']
-    reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + ', avatar: "' + img + '", descricao: "' + desc +  '", cor: "'+ color +'"})')
-   
+    #Tirar dados que não sao usados aqui e coloca-los só ao atualizar 
+    #img = "..."
+    #desc = "..."
+    #color = "..."
+    reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + '"})')
+    
     return reg
 
 @app.route('/api/entraComunidade', methods=['POST'])

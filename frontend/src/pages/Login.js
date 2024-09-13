@@ -55,7 +55,7 @@ function Formulario({navigation}){
             setUsuario({usuario: response.data.usuario});
             setNome({nome: response.data.nome});
             setColor({color: response.data.color})
-            navigate("home",  { replace: false });
+            navigate("comunidades",  { replace: false });
 
         } else {
           window.alert("Erro ao fazer login! verifique seu usuario e senha e tente novamente.");
@@ -90,6 +90,7 @@ function Formulario({navigation}){
           .then(response => {
             console.log('Resposta do servidor:', response.data);
             setButtonPopup(false);
+            window.alert("Usuário Criado!");
     
           })
           .catch(error => {
