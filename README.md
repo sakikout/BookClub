@@ -11,7 +11,10 @@ Flask==2.3.3
 Flask-Cors==4.0.0
 pandas==2.1.4
 pymgclient==1.3.1
+neo4j==5.24.0
 ````
+Caso tenha algum problema, todos podem ser instalados usando o comando `pip install ...`
+
 Frontend
 ``` bash
 "axios": "^1.6.5",
@@ -28,6 +31,23 @@ Frontend
 "reactjs-popup": "^2.0.6",
 "web-vitals": "^2.1.4"
 ````
+Caso tenha algum problema, todos podem ser instalados usando o comando `npm install ...`
+### MemGraph
+
+Para instalar o MemGraph é necessário rodar o seguinte comando no *Power Shell*:
+
+Windows
+``` bash
+iwr https://windows.memgraph.com | iex
+````
+
+Linux/Mac
+``` bash
+curl https://install.memgraph.com | sh
+````
+
+Após isso você pode encontra-lo em http://localhost:3000
+Basta clicar no botão para conectar 
 
 ## Running the application
 Backend:

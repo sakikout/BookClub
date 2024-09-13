@@ -4,7 +4,9 @@ import datetime
 import requests
 import json
 import pandas as pd
-import mgclient
+
+#A biblioteca do Memgraph (Não sei porque é o neo4j mas funciona) 
+from neo4j import GraphDatabase
  
 datahj = datetime.datetime.now()
  
@@ -12,36 +14,27 @@ datahj = datetime.datetime.now()
 app = Flask(__name__)
 CORS(app)
 
+#A url tem que ser com esse bolt mesmo
+URI = "bolt://localhost:7687"
+AUTH = ("", "")
+
+
 # Função para criar conexão no banco
-def conecta_db():
-  con = mgclient.connect(host="", port="")
-  con.autocommit = True
-  return con
+# Vamos usar só essa função pra tudo, não tem diferença de inserir/criar nem nada
+def consultar_db(consulta):
+    with GraphDatabase.driver(URI, auth=AUTH) as client:
+        # Check the connection
+        client.verify_connectivity()
+        #consulta = 'CREATE (n:Usuario {usuario: "Amanda123", nome: "Amanda", senha: "1234", avatar: "...", descricao: "uma descricao", cor: "rosa"}) RETURN n.nome AS name'
+        records, summary, keys = client.execute_query(consulta)
+    
+    #Exemplo de print, todos vem como array
+    #for record in records:
+        #print(record["name"])
+    return records, summary, keys
 
-# Função para consultas no banco
-def consultar_db(sql):
-  con = conecta_db()
-  cur = con.cursor()
-  cur.execute(sql)
-  recset = cur.fetchall()
-  registros = []
-  for rec in recset:
-    registros.append(rec)
-  con.close()
-  return registros
-
-def inserir_db(sql):
-  con = conecta_db()
-  cur = con.cursor()
-  try:
-    cur.execute(sql)
-    con.commit()
-  except (Exception, mgclient.DatabaseError) as error:
-    print("Error: %s" % error)
-    con.rollback()
-    cur.close()
-    return 1
-  con.close()
+#Esse é o teste para ver se a conexão funciona
+#consultar_db("consulta")
 
 ##################   ROTAS   ######################
  
@@ -179,7 +172,7 @@ def create_publicacao():
     date = post['data']
   
     inserir_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", conteudo: "' + conteudo + ', imagem: "' + img + '", data: "' + date + '"})')
-    inserir_db('MATCH (p:Publicacao {id: "' + id_post '"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
+    inserir_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
    
     return post
 
