@@ -6,19 +6,35 @@ import {withRouter} from 'react-router-dom';
 import Popup from '../components/popuplogin';
 import axios from 'axios';
 
+const URL_API ='http://127.0.0.1:8080/api/' 
 
 function Comunidades({navigation}){
     const navigate = useNavigate()
     const { setToken, token } = useContext(StoreContext);
-    const { setCpf, cpf } = useContext(StoreContext);
+    const { setUsuario, usuario } = useContext(StoreContext);
     const { setNome, nome } = useContext(StoreContext);
     const {comunidade, setComunidade} = useContext(StoreContext);
 
    const communities = [{id: 0, name: "Harry Potter", img: "https://m.media-amazon.com/images/I/81q77Q39nEL._SL1500_.jpg"}, {id: 1, name: "Game of Thrones", img:'https://m.media-amazon.com/images/I/71r9CosD5QL._SL1500_.jpg'}, {id: 2, name: "Bridgerton", img:'https://cdn.kobo.com/book-images/10ab6c9c-0a1d-4899-9dff-f29bab76774c/353/569/90/False/bridgerton-collection-volume-1.jpg'}] 
 
     const entrouNaComunidade = (community) => {
-        console.log("Entrou na comunidade: " + community.name + " " + community.id);
-        setComunidade({comunidade: community.name})
+        setComunidade({comunidade: community.name});
+
+        const data = {
+          usuario: nome.nome,
+          comunidade: community.name
+        }
+
+        axios.post(URL_API + 'entraComunidade', data)
+        .then(response => {
+          console.log('Resposta do servidor:', response.data);
+          window.alert("Entrou na comunidade: " + community.name);
+  
+        })
+        .catch(error => {
+          console.error('Erro ao enviar dados:', error);
+        });
+    
         navigate("home",  { replace: false });
     };
 

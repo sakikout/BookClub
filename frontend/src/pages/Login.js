@@ -8,7 +8,9 @@ import Popup from '../components/popuplogin';
 import PopupSignIn from '../components/Popup';
 import axios from 'axios';
 
-
+// Na minha máquina, só consigo entrar por essa porta.
+// Altere isso se você utiliza outra no backend.
+const URL_API ='http://127.0.0.1:8080/api/' 
 
 
 function Formulario({navigation}){
@@ -22,9 +24,16 @@ function Formulario({navigation}){
 
     
     const [formData, setFormData] = useState({
-        login: '2001', 
+        usuario: '2001', 
         senha: '123', 
     });
+
+        
+    const [formSignIn, setFormSignIn] = useState({
+      nome: 'John Doe',
+      usuario: '2001', 
+      senha: '123', 
+  });
 
     const colors = ['#FF69B4', '#FF4500', '#FFA500', '#FFD700', '#EE82EE',
       '#FF00FF', '#6A5ACD',  '#7CFC00', '#32CD32', '#00FF7F', '#00FFFF', '#1E90FF',
@@ -39,6 +48,14 @@ function Formulario({navigation}){
         }));
     };
 
+    const handleInputChangeSignIn = (event) => {
+      const { name, value } = event.target;
+      setFormSignIn((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+  };
+
     const handleSignIn = () => {
       console.log("Sign In!");
       setButtonPopup(true);
@@ -47,14 +64,19 @@ function Formulario({navigation}){
     const handleSubmit = (event) => {
       
   
-      axios.post('http://127.0.0.1:5000/api/login', formData)
+      axios.post(URL_API + 'login', formData)
       .then(response => {
         
         if(response.data.error != true){
             setToken({token: 1});
-            setUsuario({usuario: response.data.usuario});
-            setNome({nome: response.data.nome});
-            setColor({color: response.data.color})
+            setUsuario({usuario: response.data.nome});
+            setNome({nome: response.data.usuario});
+            if (response.data.color){
+               setColor({color: response.data.color})
+            } else {
+              setColor({color: getRandomColor()})
+            }
+           
             navigate("comunidades",  { replace: false });
 
         } else {
@@ -67,7 +89,7 @@ function Formulario({navigation}){
       });
   
         
-        if (formData.login == '2001' && formData.senha == '123'){
+        if (formData.usuario == '2001' && formData.senha == '123'){
           setToken({token: 1});
           setUsuario({usuario: "jonhdoe01"});
           setNome({nome: "John Doe"});
@@ -85,8 +107,9 @@ function Formulario({navigation}){
       const handleSubmitModal = (event) => {
         event.preventDefault();
         console.log(formData.nome);
+
     
-        axios.post('http://127.0.0.1:5000/api/criaUsuario', formData)
+        axios.post(URL_API + 'criaUsuario', formSignIn)
           .then(response => {
             console.log('Resposta do servidor:', response.data);
             setButtonPopup(false);
@@ -116,9 +139,9 @@ function Formulario({navigation}){
                 <label className="loginLabel">
                     Login:<br/>
                     <input 
-                        name="login" 
+                        name="usuario" 
                         className='dadosLogin' 
-                        value={formData.login}
+                        value={formData.usuario}
                         onChange={handleInputChange} />
                 </label>
                 <label className="senhaLoginLabel">
@@ -147,8 +170,8 @@ function Formulario({navigation}){
                 <input 
                       name="nome" 
                       className='dadosUsers' 
-                      value={formData.nome}
-                      onChange={handleInputChange} required/>
+                      value={formSignIn.nome}
+                      onChange={handleInputChangeSignIn} required/>
               </div>
 
               <div class = "input-modal">
@@ -158,8 +181,8 @@ function Formulario({navigation}){
                 <input 
                       name="usuario" 
                       className='dadosUsers' 
-                      value={formData.usuario}
-                      onChange={handleInputChange} required />
+                      value={formSignIn.usuario}
+                      onChange={handleInputChangeSignIn} required />
               </div>
               </div>
               <div class="form-row">
@@ -171,8 +194,8 @@ function Formulario({navigation}){
                 <input 
                       name="senha" 
                       className='dadosUsers' 
-                      value={formData.senha}
-                      onChange={handleInputChange} required />
+                      value={formSignIn.senha}
+                      onChange={handleInputChangeSignIn} required />
               </div>
               </div>
 

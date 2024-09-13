@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import datetime
-import requests
 import json
 import pandas as pd
 
@@ -12,12 +11,11 @@ datahj = datetime.datetime.now()
  
 # Initializing flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 #A url tem que ser com esse bolt mesmo
 URI = "bolt://localhost:7687"
 AUTH = ("", "")
-
 
 # Função para criar conexão no banco
 # Vamos usar só essa função pra tudo, não tem diferença de inserir/criar nem nada
@@ -36,13 +34,17 @@ def consultar_db(consulta):
 #Esse é o teste para ver se a conexão funciona
 #consultar_db("consulta")
 
+def node_to_dict(node):
+    """Converte um objeto Node do Neo4j para um dicionário."""
+    return dict(node)
+
 ##################   ROTAS   ######################
  
 @app.route('/api/login', methods=['POST'])
 def send_data():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
-    login = data['login']
+    login = data['usuario']
     senha = data['senha']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + login + '", senha: "' + str(senha)+ '"}) RETURN n.nome AS nome, n.usuario AS usuario')
     print("Dados banco:")
@@ -73,9 +75,12 @@ def create_usuario():
     #img = "..."
     #desc = "..."
     #color = "..."
-    reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + '"})')
-    
-    return reg
+    reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.nome AS nome, n.usuario AS usuario')
+    if (reg_already_exist):
+        return reg_already_exist
+    else:
+        reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + '"})')
+        return reg
 
 @app.route('/api/entraComunidade', methods=['POST'])
 def entrar_em_comunidade():
@@ -83,7 +88,18 @@ def entrar_em_comunidade():
     print("Dados recebidos:", usuario)
     username = usuario['usuario']
     comunidade = usuario['comunidade']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {comunidade: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
+
+    reg_community, summary_community, keys_community = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
+    reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"})-[rel:ESTA_EM]->(c:Comunidade {nome: "'+ comunidade + '"}) RETURN rel')
+
+    if (reg_already_exist):
+        return reg_already_exist
+
+    if(reg_community):
+        reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
+    else:
+        reg_community, summary_community, keys_community = consultar_db('CREATE (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
+        reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
    
     return reg
 
@@ -92,7 +108,7 @@ def delete_usuario():
     funcionario = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", funcionario)
     username = funcionario['usuario']
-    reg, summary, keys = consultar_db('DELETE (n:Usuario) WHERE n.usuario = "' + username + '" ')  
+    reg, summary, keys = consultar_db('DELETE (n:Usuario) WHERE n.usuario = "' + username + '" RETURN n')  
     reg = {'error': False}
     return reg
 
@@ -145,7 +161,7 @@ def sair_de_comunidade():
     print("Dados recebidos:", data)
     id_user = data['usuario']
     comunidade = data['comunidade']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[rel:ESTA_EM]->(c:Comunidade: "'+ comunidade +'") DELETE rel')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[rel:ESTA_EM]->(c:Comunidade: {nome: "'+ comunidade +'"}) DELETE rel')
     print("Dados retorno:", reg)
     return json.dumps(reg)
 
@@ -168,40 +184,66 @@ def create_publicacao():
     post = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", post)
     comunidade = post['comunidade']
+    nome = post['nome']
     id_post = post['id']
     username = post['usuario']
     conteudo = post['conteudo']
     img = post['imagem']
     date = post['data']
   
-    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", conteudo: "' + conteudo + ', imagem: "' + img + '", data: "' + date + '"})')
+    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", imagem: "' + img + '", data: "' + date + '"}) RETURN n')
     post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
    
     return post
 
 @app.route('/api/getPublicacoes', methods=['GET'])
 def get_publicacoes():
-    data_received = request.json  # Os dados do formulário serão enviados como JSON
-    comunidade = data_received['comunidade']
-    reg, summary, keys = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
-    df_bd1 = pd.DataFrame(reg, columns=['id', 'usuario', 'imagem', 'conteudo', 'data'])
-    df_bd1.head()
-    df_bd1 = df_bd1.to_dict()
-    print("Dados banco:", df_bd1)
-    dict_posts = []
-    
-    for i in range(len(df_bd1['id'])):
-    #for operador in df_bd1:
-        dict_posts.append({'id': df_bd1['id'][i],
-            'usuario': df_bd1['usuario'][i],
-            'conteudo': df_bd1['conteudo'][i],
-            'data': df_bd1['data'][i],
-            'imagem': df_bd1['imagem'][i]
-        })
-        
-    print("Dados retorno:", dict_posts)
-    return json.dumps(dict_posts)
+    try:
+        # data_received = request.json  # Os dados do formulário serão enviados como JSON
+        # comunidade = data_received['comunidade']
+        comunidade = request.args.get('comunidade')
+        reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
 
+        # Verificar o que está sendo retornado
+        print("Dados recebidos da consulta:", reg)
+
+        # Extraindo as propriedades de cada nó 'Publicacao'
+        posts = []
+        for record in reg:
+            post_node = record['p']
+            propriedades = {
+                'id': post_node['id'],
+                'nome': post_node['nome'],
+                'usuario': post_node['usuario'],
+                'conteudo': post_node['conteudo'],
+                'imagem': post_node['imagem'],
+                'data': post_node['data']
+            }
+            posts.append(propriedades)
+
+
+        # Verificar se as mensagens estão sendo extraídas corretamente
+        print("Mensagens extraídas:", posts)
+
+        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'imagem', 'conteudo', 'data'])
+        return jsonify({"posts": df_bd1.to_dict(orient="records")}), 200
+    
+    except Exception as e:
+        print(f"Erro ao obter posts: {e}")
+        return jsonify({"error": f"Erro interno: {e}"}), 500
+
+
+def delete_curtida(usuario, post):
+    try:
+        reg, summary, keys = consultar_db(
+        'MATCH (n:Usuario {usuario: "' + usuario + '"})-[rel:CURTIU]->(p:Publicacao {id: "' + post +'"}) DETACH DELETE rel'
+        )
+        
+        return jsonify({"status": "success", "data": "Curtida removida com sucesso."}), 200
+    
+    except Exception as e:
+        print("Erro:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/criarCurtida', methods=['POST'])
 def create_curtida():
@@ -209,10 +251,24 @@ def create_curtida():
     print("Dados recebidos:", post)
     usuario_que_curtiu = post['usuario']
     id_post = post['id']
-  
-    reg, summary, keys = consultar_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario_que_curtiu + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:CURTIU]->(p:Publicacao)')
    
-    return reg
+    try:
+        reg_already_exists, summary_already_exists, keys_already_exists = consultar_db(
+        'MATCH (n:Usuario {usuario: "' + usuario_que_curtiu + '"})-[rel:CURTIU]->(p:Publicacao {id: "' + id_post +'"}) RETURN rel'
+        )
+
+        if (reg_already_exists):
+            return delete_curtida(usuario_que_curtiu, id_post)
+        else:  
+            reg, summary, keys = consultar_db(
+                'MATCH (n:Usuario {usuario: "' + usuario_que_curtiu + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[rel:CURTIU]->(p) RETURN rel'
+            ) 
+            return jsonify({"status": "success", "data": "Curtida feita com sucesso!"}), 200
+    
+    except Exception as e:
+        print("Erro:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
 @app.route('/api/getCurtidas', methods=['GET'])
 def get_curtidas():
@@ -277,44 +333,73 @@ def get_comentarios():
 def create_mensagem():
     message = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", message)
-    id_message = message['id']
-    comunidade = message['comunidade']
-    usuario= message['usuario']
-    conteudo = message['conteudo']
-    date = message['data']
-    color = consultar_db('MATCH (n:Usuario) WHERE n.usuario = "' + usuario + '" RETURN n.cor')
+    try:
+        id_message = message['id']
+        comunidade = message['comunidade']
+        usuario= message['usuario']
+        conteudo = message['conteudo']
+        date = message['data']
+        color = message['color']
 
-    reg, summary, keys = consultar_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"})')
-    msg, summary_msg, keys_msg = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa) CREATE (m:Mensagem {id: "'+ id_message +'"}-[:EM]->(n)')
+        # Criar a mensagem no banco de dados
+        reg, summary, keys = consultar_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"}) RETURN m')
+        print("Mensagem criada:", reg)
 
-    return msg
+        # Relacionar a mensagem à conversa da comunidade
+        msg, summary_msg, keys_msg = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})  OPTIONAL MATCH (c)-[:TEM_CONVERSA]->(n:Conversa) WITH c, n MERGE (m:Mensagem {id: "'+ id_message +'"}) MERGE (m)-[:EM]->(n) RETURN m')
+        msgs = [node_to_dict(record['m']) for record in msg]
+        msg_received = msgs[-1]  # Assume que o último registro contém a mensagem
+        print("Mensagem relacionada à conversa:", msg_received)
+        
+        return jsonify({"message": "Mensagem criada e relacionada com sucesso", "data": msg_received}), 200
+
+    except KeyError as e:
+        print(f"Erro: Chave ausente no JSON recebido: {e}")
+        return {"error": f"Campo obrigatório ausente: {e}"}, 400
+
+    except Exception as e:
+        print(f"Erro ao criar a mensagem: {e}")
+        return {"error": "Erro interno ao criar a mensagem"}, 500
+
 
 @app.route('/api/getMensagens', methods=['GET'])
 def get_mensagens():
-    data_received = request.json  # Os dados do formulário serão enviados como JSON
-    comunidade = data_received['comunidade']
-    reg, summary, keys = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa)<-[:EM]-(m:Mensagem) RETURN m')
-    df_bd1 = pd.DataFrame(reg, columns=['id', 'usuario', 'conteudo', 'data', 'cor'])
-    df_bd1.head()
-    df_bd1 = df_bd1.to_dict()
-    print("Dados banco:", df_bd1)
-    dict_messages = []
+    try:
+        # data_received = request.json  # Os dados do formulário serão enviados como JSON
+        # comunidade = data_received['comunidade']
+        comunidade = request.args.get('comunidade')
+        reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa)<-[:EM]-(m:Mensagem) RETURN m')
+
+        # Verificar o que está sendo retornado
+        print("Dados recebidos da consulta:", reg)
+
+        # Extraindo as propriedades de cada nó 'Mensagem'
+        mensagens = []
+        for record in reg:
+            mensagem_node = record['m']
+            propriedades = {
+                'id': mensagem_node['id'],
+                'usuario': mensagem_node['usuario'],
+                'conteudo': mensagem_node['conteudo'],
+                'cor': mensagem_node['cor'],
+                'data': mensagem_node['data']
+            }
+            mensagens.append(propriedades)
+
+
+        # Verificar se as mensagens estão sendo extraídas corretamente
+        print("Mensagens extraídas:", mensagens)
+
+        df_bd1 = pd.DataFrame(mensagens, columns=['id', 'usuario', 'conteudo', 'data', 'cor'])
+        return jsonify({"mensagens": df_bd1.to_dict(orient="records")}), 200
     
-    for i in range(len(df_bd1['id'])):
-    #for operador in df_bd1:
-        dict_messages.append({
-            'usuario': df_bd1['usuario'][i],
-            'conteudo': df_bd1['conteudo'][i],
-            'data': df_bd1['data'][i],
-            'cor': df_bd1['cor'][i]
-        })
-        
-    print("Dados retorno:", dict_messages)
-    return json.dumps(dict_messages)
+    except Exception as e:
+        print(f"Erro ao obter mensagens: {e}")
+        return jsonify({"error": f"Erro interno: {e}"}), 500
 
 
 # Running app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8080)
 
 

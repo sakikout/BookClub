@@ -11,14 +11,24 @@ import Popup from '../components/popuplogin';
 import '../components/style/style.css'
 import StoreContext from '../components/Store/Context';
 
+// Na minha máquina, só consigo entrar por essa porta.
+// Altere isso se você utiliza outra no backend.
+const URL_API ='http://127.0.0.1:8080/api/' ;
+
+function getDateNow(){
+  var d = new Date();
+  return d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+}
+
 function createMessages(data) {
   const messages = [];
-    for (let i = 0; i < Object.keys(data.id).length; i++) {
+    for (let i = 0; i < data.mensagens.length; i++) {
       messages.push({
-        usuario: data['usuario'][i],
-        nome: data['nome'][i],
-        conteudo: data['conteudo'][i],
-        color: data['color'][i]
+        id: data.mensagens[i].id,
+        usuario: data.mensagens[i].usuario,
+        nome: data.mensagens[i].nome,
+        conteudo: data.mensagens[i].conteudo,
+        color: data.mensagens[i].color
       });
   }
 
@@ -57,10 +67,12 @@ function Conversas({userData}){
     const [buttonDeletePopup, setDeletePopup] = useState(false);
     
     const[formData, setMessage] = useState({
-            nome: nome,
-            comunidade: comunidade,
+            id: crypto.randomUUID(),
+            usuario: nome.nome,
+            comunidade: comunidade.comunidade,
             conteudo: '',
-            color: color
+            color: color.color,
+            data: getDateNow(),
     });
     
     const handleInputChange = (event) => {
@@ -73,34 +85,27 @@ function Conversas({userData}){
 
     
     useEffect(() => {
-      fetchData();
-    });
+      handleLoadMessages();
   
-    const fetchData = async () => {
-      try {
-        const chatMessages = document.querySelector(".chatMessages")
-        if (tableData.length < 1){
-          const newUsers = createRandomMessages();
-          setTableData([...tableData, ...newUsers])
-        }
-        for (let i = 0; i < tableData.length; i++){
-          const element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
-          chatMessages.appendChild(element)
-        }
-       console.log(tableData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+      const interval = setInterval(() => {
+        handleLoadMessages();
+      }, 5000); 
+  
+      return () => clearInterval(interval);
+    }, [comunidade]);
 
+    useEffect(() => {
+      renderMessages();
+    }, [tableData]);
+  
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    axios.post('http://127.0.0.1:5000/api/criarMensagem', formData)
+    axios.post(URL_API +'criarMensagem', formData)
     .then(response => {
       console.log('Resposta do servidor:', response.data);
       setDeletePopup(false);
-      handleLoadMessages(event)
+      handleLoadMessages()
     })
     .catch(error => {
       console.error('Erro ao enviar dados:', error);
@@ -119,24 +124,42 @@ function Conversas({userData}){
   };
 
 
-const handleLoadMessages = (event) => {
-  event.preventDefault();
+const handleLoadMessages = () => {
   
-  axios.get('http://127.0.0.1:5000/api/getMessages')
+  axios.get(URL_API + 'getMensagens', {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    params: {
+      comunidade: comunidade.comunidade
+    }
+  })
     .then(response => {
       console.log('Resposta do servidor:', response.data);
       const table = createMessages(response.data)
       setTableData([...table])
-
-      
     
     })
     .catch(error => {
       console.error('Erro ao enviar dados:', error);
     });
-  
- 
+
 }
+
+const renderMessages = () => {
+  const chatMessages = document.querySelector(".chatMessages");
+  chatMessages.innerHTML = ''; // Limpa o chat antes de adicionar as mensagens novamente
+
+  for (let i = 0; i < tableData.length; i++) {
+    let element;
+    if (tableData[i].usuario === nome.nome) {
+      element = createMessageSelfElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
+    } else {
+      element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
+    }
+    chatMessages.appendChild(element);
+  }
+};
 
   const createMessageSelfElement = (content) => {
      // it will be deleted when the backend works.

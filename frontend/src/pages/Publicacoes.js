@@ -8,9 +8,31 @@ import bubble from "../icons/bubble-green.png";
 import greenHeart from "../icons/heart-green.png";
 import pinkHeart from "../icons/pink-heart.png";
 
+
+// Na minha máquina, só consigo entrar por essa porta.
+// Altere isso se você utiliza outra no backend.
+const URL_API ='http://127.0.0.1:8080/api/' 
+
 function getDateNow(){
   var d = new Date();
   return d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+}
+
+function createPosts(data) {
+  const posts = [];
+    for (let i = 0; i < data.posts.length; i++) {
+      posts.push({
+        id: data.posts[i].id,
+        usuario: data.posts[i].usuario,
+        nome: data.posts[i].nome,
+        conteudo: data.posts[i].conteudo,
+        imagem: data.posts[i].imagem,
+        comentarios: data.posts[i].comentarios || [],
+        curtidas: data.posts[i].curtidas || []
+      });
+  }
+
+  return posts;
 }
 
 function createRandomPosts(count = 5) {
@@ -98,6 +120,7 @@ function Publicacoes({userData}){
 
   const[formData, setPost] = useState({
     id: crypto.randomUUID(),
+    nome: nome.nome,
     usuario: usuario.usuario,
     data: getDateNow(),
     conteudo: '',
@@ -132,8 +155,18 @@ const handleInputChangeComment = (event) => {
     event.preventDefault();
 
     console.log(formData);
+
+    const data = {
+      id: formData.id,
+      nome: formData.nome,
+      usuario: formData.usuario,
+      data: formData.data,
+      conteudo: formData.conteudo,
+      comunidade: comunidade.comunidade,
+      imagem: "..."
+    }
     
-    axios.post('http://127.0.0.1:5000/api/criarPostagem', formData)
+    axios.post( URL_API + 'criarPublicacao', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         window.alert("Entrada no caixa feita com sucesso!");
@@ -145,25 +178,35 @@ const handleInputChangeComment = (event) => {
   
   
   useEffect(() => {
-    fetchData();
+    handleLoadPosts();
 
-  });
+    const interval = setInterval(() => {
+      handleLoadPosts();
+    }, 5000); 
 
-  const fetchData = async () => {
-    try {
-      if (tableData.length < 1){
-        handleCreatePosts();
+    return () => clearInterval(interval);
+  }, [comunidade]);
+
+  const handleLoadPosts = () => {
+
+    axios.get(URL_API + 'getPublicacoes', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      params: {
+        comunidade: comunidade.comunidade
       }
-     /* console.log(tableData); */
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    })
+    .then(response => {
+      console.log('Resposta do servidor:', response.data);
+      const newPosts = createPosts(response.data)
+      setTableData([...tableData, ...newPosts])
 
-  const handleCreatePosts = () => {
-    const newUsers = createRandomPosts()
-    setTableData([...tableData, ...newUsers])
-}
+    })
+    .catch(error => {
+      console.error('Erro ao receber dados:', error);
+    });
+  }
 
   const sendLike = (obj, className) => {
     const element = document.querySelector(className);
@@ -181,15 +224,17 @@ const handleInputChangeComment = (event) => {
 
     const data = {
       id: obj.id,
-      usuario: usuario.usuario.value
+      usuario: usuario.usuario
     }
+
+    console.log("Dados senod enviados para curtida: "+ data.id + " " + data.usuario);
 
     // obj.curtidas.append({usuario: usuario.usuario});
 
-    axios.post('http://127.0.0.1:5000/api/criarCurtida', data)
+    axios.post(URL_API + 'criarCurtida', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        window.alert("Entrada no caixa feita com sucesso!");
+        window.alert("Post foi curtido!");
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -217,7 +262,7 @@ const handleInputChangeComment = (event) => {
     console.log("Comentário a ser enviado: ");
     console.log(data);
     
-    axios.post('http://127.0.0.1:5000/api/criarComentario', data)
+    axios.post(URL_API + 'criarComentario', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         window.alert("Entrada no caixa feita com sucesso!");
