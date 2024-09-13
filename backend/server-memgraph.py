@@ -44,7 +44,7 @@ def send_data():
     print("Dados recebidos:", data)
     login = data['usuario']
     senha = data['senha']
-    reg = consultar_db('MATCH (n:Usuario {usuario: "' + login + '"}) WHERE n.senha = "' + str(senha)+ '"')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + login + '"}) WHERE n.senha = "' + str(senha)+ '"')
     print("Dados banco:", reg)
     if(len(reg) > 0):
         df_bd = pd.DataFrame(reg, columns=['usuario', 'nome'])
@@ -70,9 +70,9 @@ def create_usuario():
     img = usuario['avatar']
     desc = usuario['descricao']
     color = usuario['color']
-    inserir_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + ', avatar: "' + img + '", descricao: "' + desc +  '", cor: "'+ color +'"})')
+    reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + ', avatar: "' + img + '", descricao: "' + desc +  '", cor: "'+ color +'"})')
    
-    return usuario
+    return reg
 
 @app.route('/api/entraComunidade', methods=['POST'])
 def entrar_em_comunidade():
@@ -80,23 +80,23 @@ def entrar_em_comunidade():
     print("Dados recebidos:", usuario)
     username = usuario['usuario']
     comunidade = usuario['comunidade']
-    inserir_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {comunidade: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {comunidade: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
    
-    return usuario
+    return reg
 
 @app.route('/api/deletaUsuario', methods=['POST'])
 def delete_usuario():
     funcionario = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", funcionario)
     username = funcionario['usuario']
-    usuario = inserir_db('DELETE (n:Usuario) WHERE n.usuario = "' + username + '" ')  
-    usuario = {'error': False}
-    return usuario
+    reg, summary, keys = consultar_db('DELETE (n:Usuario) WHERE n.usuario = "' + username + '" ')  
+    reg = {'error': False}
+    return reg
 
 @app.route('/api/getUsuarios', methods=['GET'])
 def get_usuarios():
-    user = consultar_db('MATCH (n:Usuario) RETURN n')
-    df_bd1 = pd.DataFrame(user, columns=['usuario', 'nome', 'senha', 'descricao', 'avatar', 'cor'])
+    reg, summary, keys = consultar_db('MATCH (n:Usuario) RETURN n')
+    df_bd1 = pd.DataFrame(reg, columns=['usuario', 'nome', 'senha', 'descricao', 'avatar', 'cor'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
@@ -120,8 +120,8 @@ def get_comunidades_de_usuario():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
     id_user = data['usuario']
-    user = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[:ESTA_EM]->(c:Comunidade) RETURN c')
-    df_bd1 = pd.DataFrame(user, columns=['id','nome'])
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[:ESTA_EM]->(c:Comunidade) RETURN c')
+    df_bd1 = pd.DataFrame(reg, columns=['id','nome'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
@@ -142,9 +142,9 @@ def sair_de_comunidade():
     print("Dados recebidos:", data)
     id_user = data['usuario']
     comunidade = data['comunidade']
-    relacao = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[rel:ESTA_EM]->(c:Comunidade: "'+ comunidade +'") DELETE rel')
-    print("Dados retorno:", relacao)
-    return json.dumps(relacao)
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[rel:ESTA_EM]->(c:Comunidade: "'+ comunidade +'") DELETE rel')
+    print("Dados retorno:", reg)
+    return json.dumps(reg)
 
 @app.route('/api/setUsuario', methods=['POST'])
 def set_usuario():
@@ -156,9 +156,9 @@ def set_usuario():
     img = usuario['avatar']
     desc = usuario['descricao']
     color = usuario['color']
-    inserir_db('MATCH (n:Usuario {id: "' + username + '"}) SET n.nome = "' + nome + '", n.senha = "' + senha + ', n.avatar = "' + img + '", n.descricao = "' + desc +  '", n.color = "'+ color +'"})')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {id: "' + username + '"}) SET n.nome = "' + nome + '", n.senha = "' + senha + ', n.avatar = "' + img + '", n.descricao = "' + desc +  '", n.color = "'+ color +'"})')
    
-    return usuario
+    return reg
 
 @app.route('/api/criarPublicacao', methods=['POST'])
 def create_publicacao():
@@ -171,8 +171,8 @@ def create_publicacao():
     img = post['imagem']
     date = post['data']
   
-    inserir_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", conteudo: "' + conteudo + ', imagem: "' + img + '", data: "' + date + '"})')
-    inserir_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
+    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", conteudo: "' + conteudo + ', imagem: "' + img + '", data: "' + date + '"})')
+    post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
    
     return post
 
@@ -180,8 +180,8 @@ def create_publicacao():
 def get_publicacoes():
     data_received = request.json  # Os dados do formulário serão enviados como JSON
     comunidade = data_received['comunidade']
-    posts = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
-    df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'imagem', 'conteudo', 'data'])
+    reg, summary, keys = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
+    df_bd1 = pd.DataFrame(reg, columns=['id', 'usuario', 'imagem', 'conteudo', 'data'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
@@ -207,16 +207,16 @@ def create_curtida():
     usuario_que_curtiu = post['usuario']
     id_post = post['id']
   
-    inserir_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario_que_curtiu + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:CURTIU]->(p:Publicacao)')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario_que_curtiu + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:CURTIU]->(p:Publicacao)')
    
-    return post
+    return reg
 
 @app.route('/api/getCurtidas', methods=['GET'])
 def get_curtidas():
     data_received = request.json  # Os dados do formulário serão enviados como JSON
     postagem = data_received['idPost']
-    curtidas = consultar_db('MATCH (p:Publicacao {id: "'+ postagem +'"})<-[:CURTIU]-(n:Usuario) RETURN n')
-    df_bd1 = pd.DataFrame(curtidas, columns=['usuario'])
+    reg, summary, keys = consultar_db('MATCH (p:Publicacao {id: "'+ postagem +'"})<-[:CURTIU]-(n:Usuario) RETURN n')
+    df_bd1 = pd.DataFrame(reg, columns=['usuario'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
@@ -242,16 +242,16 @@ def create_comentario():
     date = post['data']
     id_post = post['idPost']
   
-    inserir_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}]->(p:Publicacao)')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}]->(p:Publicacao)')
    
-    return post
+    return reg
 
 @app.route('/api/getComentarios', methods=['GET'])
 def get_comentarios():
     data_received = request.json  # Os dados do formulário serão enviados como JSON
     postagem = data_received['idPost']
-    comment = consultar_db('MATCH (p:Publicacao {id: "'+ postagem +'"})<-[rel:COMENTOU]-(n:Usuario) RETURN rel')
-    df_bd1 = pd.DataFrame(comment, columns=['id', 'usuario', 'nome', 'conteudo', 'data',])
+    reg, summary, keys = consultar_db('MATCH (p:Publicacao {id: "'+ postagem +'"})<-[rel:COMENTOU]-(n:Usuario) RETURN rel')
+    df_bd1 = pd.DataFrame(reg, columns=['id', 'usuario', 'nome', 'conteudo', 'data',])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
@@ -281,17 +281,17 @@ def create_mensagem():
     date = message['data']
     color = consultar_db('MATCH (n:Usuario) WHERE n.usuario = "' + usuario + '" RETURN n.cor')
 
-    inserir_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"})')
-    inserir_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa) CREATE (m:Mensagem {id: "'+ id_message +'"}-[:EM]->(n)')
+    reg, summary, keys = consultar_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"})')
+    msg, summary_msg, keys_msg = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa) CREATE (m:Mensagem {id: "'+ id_message +'"}-[:EM]->(n)')
 
-    return message
+    return msg
 
 @app.route('/api/getMensagens', methods=['GET'])
 def get_mensagens():
     data_received = request.json  # Os dados do formulário serão enviados como JSON
     comunidade = data_received['comunidade']
-    message = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa)<-[:EM]-(m:Mensagem) RETURN m')
-    df_bd1 = pd.DataFrame(message, columns=['id', 'usuario', 'conteudo', 'data', 'cor'])
+    reg, summary, keys = consultar_db('(c:Comunidade {nome: "'+ comunidade +'"})-[:TEM_CONVERSA]->(n:Conversa)<-[:EM]-(m:Mensagem) RETURN m')
+    df_bd1 = pd.DataFrame(reg, columns=['id', 'usuario', 'conteudo', 'data', 'cor'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
