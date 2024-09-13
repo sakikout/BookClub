@@ -314,11 +314,11 @@ const handleInputChangeComment = (event) => {
             return (
               <div className='postagem' key={obj.id}>
               <div className={'post-top-' + obj.id}>
-              <div class="post-header"> 
-                 <div class="profile-pic"></div> 
-                   <div class="user-info"> 
-                      <div class="full-name">{obj.nome}</div> 
-                      <div class="username">@{obj.usuario}</div>
+              <div className="post-header"> 
+                 <div className="profile-pic"></div> 
+                   <div className="user-info"> 
+                      <div className="full-name">{obj.nome}</div> 
+                      <div className="username">@{obj.usuario}</div>
                     </div> 
               </div>
               <div className="post-content">
@@ -346,11 +346,11 @@ const handleInputChangeComment = (event) => {
                 <div className="comments">
                   {obj.comentarios.map((comment) =>{
                     return ( <div className="comment" key={comment.id}> 
-                      <div class="post-header"> 
-                          <div class="profile-pic-comment"></div> 
-                          <div class="user-info-comment"> 
-                            <div class="full-name">{comment.nome}</div> 
-                            <div class="username">@{comment.usuario}</div>
+                      <div className="post-header"> 
+                          <div className="profile-pic-comment"></div> 
+                          <div className="user-info-comment"> 
+                            <div className="full-name">{comment.nome}</div> 
+                            <div className="username">@{comment.usuario}</div>
                           </div>
                       </div>
                       <div className="post-content-comment">

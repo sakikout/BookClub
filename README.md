@@ -22,6 +22,8 @@ curl https://install.memgraph.com | sh
 Após isso você pode encontra-lo em http://localhost:3000
 Basta clicar no botão para conectar 
 
+Obsevação: É necessário que o docker esteja rodando!
+
 
 ###Backend (Python server)
 ``` bash

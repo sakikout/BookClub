@@ -11,7 +11,8 @@ datahj = datetime.datetime.now()
  
 # Initializing flask app
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app)
+#CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 #A url tem que ser com esse bolt mesmo
 URI = "bolt://localhost:7687"
@@ -94,12 +95,12 @@ def entrar_em_comunidade():
 
     if (reg_already_exist):
         return reg_already_exist
-
-    if(reg_community):
-        reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
     else:
-        reg_community, summary_community, keys_community = consultar_db('CREATE (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
-        reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[:ESTA_EM]->(c)')
+        if(reg_community):
+            reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[rel:ESTA_EM]->(c) RETURN rel')
+        else:
+            reg_community, summary_community, keys_community = consultar_db('CREATE (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
+            reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[rel:ESTA_EM]->(c) RETURN rel')
    
     return reg
 

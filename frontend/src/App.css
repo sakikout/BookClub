@@ -79,14 +79,12 @@ label {
   flex-direction: column;
 }
 
-.form {
-  display: ruby-text;
- /* 
+.form {  
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  */
+  
 }
 
 .logo {
@@ -195,7 +193,9 @@ label {
   border-radius: 15px;
   display: flex;
   align-items: center;
+  
 }
+
 .chatText{
   top: 30px;
   font-size: 22px;
@@ -222,6 +222,12 @@ label {
   background-color: white;
   position: fixed;
   top: 0;
+}
+
+.labelComunidades{
+  position: fixed;
+  top: 0;
+  margin-bottom: 20px;
 }
 
 .chatBackground {

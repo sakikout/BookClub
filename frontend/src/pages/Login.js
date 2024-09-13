@@ -131,7 +131,7 @@ function Formulario({navigation}){
         <div className='content'>
         <img src={logo} className='logo' alt="BookClub logo!"/>
             <div>
-              <span class="loginFormTitle"></span>
+              <span className="loginFormTitle"></span>
               </div>
         <form onSubmit={handleSubmit}>
             <div className='form'>
@@ -162,8 +162,8 @@ function Formulario({navigation}){
           <div className='container-modal'>
             <div className="text-modal">Criar Usuário</div>
             <form onSubmit={handleSubmitModal}>
-            <div class="form-row">
-              <div class="input-modal">
+            <div className="form-row">
+              <div className="input-modal">
                 <label className='modalLabel' for="cdprod">
                   Nome
                 </label>
@@ -174,7 +174,7 @@ function Formulario({navigation}){
                       onChange={handleInputChangeSignIn} required/>
               </div>
 
-              <div class = "input-modal">
+              <div className = "input-modal">
                 <label className='modalLabel' for="quantidade">
                   Nome de Usuário
                 </label>
@@ -185,9 +185,9 @@ function Formulario({navigation}){
                       onChange={handleInputChangeSignIn} required />
               </div>
               </div>
-              <div class="form-row">
+              <div className="form-row">
 
-              <div class = "input-modal">
+              <div className = "input-modal">
                 <label className='modalLabel' for="quantidade">
                   Senha
                 </label>
@@ -199,7 +199,7 @@ function Formulario({navigation}){
               </div>
               </div>
 
-              <div class="form-row">
+              <div className="form-row">
               </div>
               <button className= "modalButton" 
               type = "submit"

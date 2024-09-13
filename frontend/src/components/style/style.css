@@ -43,8 +43,8 @@
   }
 
   .community-img {
-    width: 50px; 
-    height: 300px; 
+    width: 50dvh; 
+    height: 200px; 
     display: flex;
   }
 
@@ -54,6 +54,7 @@
     align-items: center;
     align-content: center;
     justify-content: center;
+    padding: 20PX;
   }
 
 .form-all{

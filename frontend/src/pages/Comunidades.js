@@ -5,6 +5,8 @@ import StoreContext from '../components/Store/Context';
 import {withRouter} from 'react-router-dom';
 import Popup from '../components/popuplogin';
 import axios from 'axios';
+import "../components/style/style.css";
+import '../App.css';
 
 const URL_API ='http://127.0.0.1:8080/api/' 
 
@@ -28,7 +30,7 @@ function Comunidades({navigation}){
         axios.post(URL_API + 'entraComunidade', data)
         .then(response => {
           console.log('Resposta do servidor:', response.data);
-          window.alert("Entrou na comunidade: " + community.name);
+          //window.alert("Entrou na comunidade: " + community.name);
   
         })
         .catch(error => {
@@ -82,7 +84,10 @@ function Comunidades({navigation}){
         <div className="bg"></div>
         <div className="bg bg2"></div>
         <div className="bg bg3"></div>
+        <div ></div>
+        
         <div className='content'>
+        <label className="labelComunidades">Comunidades:</label>
         <div className="communities-list">
                 {communities.map((community) => (
                     <div className="community-item" key={community.id} onClick={() => entrouNaComunidade(community)}>
