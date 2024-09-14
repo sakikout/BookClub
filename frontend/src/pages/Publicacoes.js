@@ -131,6 +131,7 @@ function Publicacoes({userData}){
   const[formComment, setComment] = useState({
     id: '',
     usuario: usuario.usuario,
+    nome: nome.nome,
     data: getDateNow(),
     conteudo: '',
   });
@@ -254,6 +255,7 @@ const handleInputChangeComment = (event) => {
     const data = {
       idPost: activePost.id,
       id: crypto.randomUUID(),
+      nome: formComment.nome,
       usuario: formComment.usuario,
       conteudo: formComment.conteudo,
       data: formComment.data

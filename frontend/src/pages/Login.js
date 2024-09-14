@@ -88,7 +88,7 @@ function Formulario({navigation}){
         console.error('Erro ao enviar dados:', error);
       });
   
-        
+        /* 
         if (formData.usuario == '2001' && formData.senha == '123'){
           setToken({token: 1});
           setUsuario({usuario: "jonhdoe01"});
@@ -96,6 +96,7 @@ function Formulario({navigation}){
           setColor({color: getRandomColor()})
           navigate("comunidades",  { replace: false });
         }
+          */
         event.preventDefault();
       };
 

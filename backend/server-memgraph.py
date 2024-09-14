@@ -320,11 +320,12 @@ def create_comentario():
     print("Dados recebidos:", post)
     id_comentario = post['id']
     usuario= post['usuario']
+    nome = post['nome']
     conteudo = post['conteudo']
     date = post['data']
     id_post = post['idPost']
   
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + usuario + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}]->(p)')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + usuario + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'", usuario: "'+ usuario +'", nome: "'+ nome +'"}]->(p)')
    
     return jsonify({"status": "success"}), 200
 
@@ -366,6 +367,7 @@ def create_mensagem():
 
         # Criar a mensagem no banco de dados
         reg, summary, keys = consultar_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"}) RETURN m')
+        reg_rel, summary_rel, keys_rel = consultar_db('MATCH (m: Mensagem {id: "' + id_message + '"}), (u:Usuario {usuario:"'+ usuario +'"}) CREATE (u)-[rel:ENVIOU]->(m) RETURN rel')
         print("Mensagem criada:", reg)
 
         # Relacionar a mensagem à conversa da comunidade
