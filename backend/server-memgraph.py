@@ -197,13 +197,31 @@ def create_publicacao():
    
     return post
 
+def comentario_to_dict(c):
+    # {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}
+    return {
+        "id": c["id"],
+        "nome": c["nome"],
+        "conteudo": c["conteudo"],
+        "data": c["data"],
+        "usuario": c["usuario"]
+    }
+
+def curtida_to_dict(curtida):
+    return {
+        "usuario": curtida["usuario"]  # ou qualquer outra propriedade da curtida que seja relevante
+    }
+
 @app.route('/api/getPublicacoes', methods=['GET'])
 def get_publicacoes():
     try:
         # data_received = request.json  # Os dados do formulário serão enviados como JSON
         # comunidade = data_received['comunidade']
         comunidade = request.args.get('comunidade')
-        reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
+        # reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
+
+        reg, summary, keys = consultar_db(
+            'MATCH (p:Publicacao)-[:PERTENCE_A]->(com:Comunidade {nome: "'+ comunidade +'"}) OPTIONAL MATCH (p)<-[:CURTIU]-(u:Usuario) OPTIONAL MATCH (p)<-[rel:COMENTOU]-(v:Usuario) RETURN p, collect(DISTINCT u.usuario) AS curtidas, collect(DISTINCT rel) AS comentarios')
 
         # Verificar o que está sendo retornado
         print("Dados recebidos da consulta:", reg)
@@ -218,7 +236,9 @@ def get_publicacoes():
                 'usuario': post_node['usuario'],
                 'conteudo': post_node['conteudo'],
                 'imagem': post_node['imagem'],
-                'data': post_node['data']
+                "curtidas": record["curtidas"],
+                'data': post_node['data'],
+                "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
             }
             posts.append(propriedades)
 
@@ -226,7 +246,7 @@ def get_publicacoes():
         # Verificar se as mensagens estão sendo extraídas corretamente
         print("Mensagens extraídas:", posts)
 
-        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'imagem', 'conteudo', 'data'])
+        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'imagem', 'conteudo', 'data', 'curtidas', 'comentarios'])
         return jsonify({"posts": df_bd1.to_dict(orient="records")}), 200
     
     except Exception as e:
@@ -275,7 +295,9 @@ def create_curtida():
 def get_curtidas():
     data_received = request.json  # Os dados do formulário serão enviados como JSON
     postagem = data_received['idPost']
-    reg, summary, keys = consultar_db('MATCH (p:Publicacao {id: "'+ postagem +'"})<-[:CURTIU]-(n:Usuario) RETURN n')
+    reg, summary, keys = consultar_db(
+        'MATCH (p:Publicacao {id: "'+ postagem +'"})<-[:CURTIU]-(n:Usuario) RETURN n'
+        )
     df_bd1 = pd.DataFrame(reg, columns=['usuario'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
@@ -302,9 +324,9 @@ def create_comentario():
     date = post['data']
     id_post = post['idPost']
   
-    reg, summary, keys = consultar_db('MATCH (n:Usuario), (p:Publicacao) WHERE n.usuario = "' + usuario + '" AND p.id = "' + id_post +'" CREATE (n:Usuario )-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}]->(p:Publicacao)')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + usuario + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'"}]->(p)')
    
-    return reg
+    return jsonify({"status": "success"}), 200
 
 @app.route('/api/getComentarios', methods=['GET'])
 def get_comentarios():

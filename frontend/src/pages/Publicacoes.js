@@ -31,7 +31,7 @@ function createPosts(data) {
         curtidas: data.posts[i].curtidas || []
       });
   }
-
+  console.log(posts)
   return posts;
 }
 
