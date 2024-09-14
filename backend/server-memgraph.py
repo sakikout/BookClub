@@ -104,15 +104,6 @@ def entrar_em_comunidade():
    
     return jsonify({"status": "success", "data": reg}), 200
 
-@app.route('/api/deletaUsuario', methods=['POST'])
-def delete_usuario():
-    funcionario = request.json  # Os dados do formulário serão enviados como JSON
-    print("Dados recebidos:", funcionario)
-    username = funcionario['usuario']
-    reg, summary, keys = consultar_db('DELETE (n:Usuario) WHERE n.usuario = "' + username + '" RETURN n')  
-    reg = {'error': False}
-    return reg
-
 @app.route('/api/getUsuarios', methods=['GET'])
 def get_usuarios():
     reg, summary, keys = consultar_db('MATCH (n:Usuario) RETURN n')
@@ -166,6 +157,34 @@ def sair_de_comunidade():
     print("Dados retorno:", reg)
     return json.dumps(reg)
 
+@app.route('/api/setSenha', methods=['POST'])
+def set_senha_usuario():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    nome = usuario['nome']
+    senha = usuario['senha']
+    img = usuario['avatar']
+    desc = usuario['descricao']
+    color = usuario['color']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.senha = "' + senha + '" RETURN n)')
+   
+    return reg
+
+@app.route('/api/setImagem', methods=['POST'])
+def set_avatar_usuario():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    nome = usuario['nome']
+    senha = usuario['senha']
+    img = usuario['avatar']
+    desc = usuario['descricao']
+    color = usuario['color']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.avatar = "' + img + '" RETURN n)')
+   
+    return reg
+
 @app.route('/api/setUsuario', methods=['POST'])
 def set_usuario():
     usuario = request.json  # Os dados do formulário serão enviados como JSON
@@ -176,9 +195,38 @@ def set_usuario():
     img = usuario['avatar']
     desc = usuario['descricao']
     color = usuario['color']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {id: "' + username + '"}) SET n.nome = "' + nome + '", n.senha = "' + senha + ', n.avatar = "' + img + '", n.descricao = "' + desc +  '", n.color = "'+ color +'"})')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.usuario = "' + usuario + '" RETURN n)')
    
     return reg
+
+@app.route('/api/setNome', methods=['POST'])
+def set_nome():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    nome = usuario['nome']
+    senha = usuario['senha']
+    img = usuario['avatar']
+    desc = usuario['descricao']
+    color = usuario['color']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.nome = "' + nome + '" RETURN n)')
+   
+    return reg
+
+@app.route('/api/deleteUsuario', methods=['POST'])
+def delete_usuario():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    nome = usuario['nome']
+    senha = usuario['senha']
+    img = usuario['avatar']
+    desc = usuario['descricao']
+    color = usuario['color']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) DETACH DELETE n)')
+   
+    return reg
+
 
 def create_notificacao(idNotificacao, usuario, conteudo, data, titulo, comunidade):
     reg, summary, keys = consultar_db(
@@ -270,6 +318,65 @@ def get_publicacoes():
     except Exception as e:
         print(f"Erro ao obter posts: {e}")
         return jsonify({"error": f"Erro interno: {e}"}), 500
+
+
+@app.route('/api/getPublicacoesUsuario', methods=['GET'])
+def get_publicacoes_usuario():
+    try:
+        # data_received = request.json  # Os dados do formulário serão enviados como JSON
+        # comunidade = data_received['comunidade']
+        usuario = request.args.get('usuario')
+        # reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
+
+        reg, summary, keys = consultar_db(
+            'MATCH (p:Publicacao {usuario: "'+ usuario +'"}) RETURN p')
+
+        # Verificar o que está sendo retornado
+        print("Dados recebidos da consulta:", reg)
+
+        # Extraindo as propriedades de cada nó 'Publicacao'
+        posts = []
+        for record in reg:
+            post_node = record['p']
+            propriedades = {
+                'id': post_node['id'],
+                'nome': post_node['nome'],
+                'usuario': post_node['usuario'],
+                'conteudo': post_node['conteudo'],
+                'imagem': post_node['imagem'],
+                "curtidas": record["curtidas"],
+                'data': post_node['data'],
+                "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
+            }
+            posts.append(propriedades)
+
+
+        # Verificar se as mensagens estão sendo extraídas corretamente
+        print("Mensagens extraídas:", posts)
+
+        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'imagem', 'conteudo', 'data', 'curtidas', 'comentarios'])
+        return jsonify({"posts": df_bd1.to_dict(orient="records")}), 200
+    
+    except Exception as e:
+        print(f"Erro ao obter posts: {e}")
+        return jsonify({"error": f"Erro interno: {e}"}), 500
+
+@app.route('/api/deletaPublicacao', methods=['POST'])
+def delete_publicacao():
+    try:
+        post = request.json  # Os dados do formulário serão enviados como JSON
+        print("Dados recebidos:", post)
+        id_post = post['id']
+  
+        reg, summary, keys = consultar_db(
+            'MATCH (p:Publicacao {id: "'+ id_post +'"}) DETACH DELETE p')
+
+        return jsonify({"status": "success", "message": "A publicação foi apagada!"}), 200
+    
+    except Exception as e:
+        print(f"Erro ao apagar post: {e}")
+        return jsonify({"error": f"Erro interno: {e}"}), 500
+
 
 
 def delete_curtida(usuario, post):

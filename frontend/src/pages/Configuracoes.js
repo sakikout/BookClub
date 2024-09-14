@@ -5,61 +5,24 @@ import StoreContext from '../components/Store/Context';
 import Popup from '../components/Popup';
 import axios from 'axios';
 
-function createRandomPosts() {
+// Na minha máquina, só consigo entrar por essa porta.
+// Altere isso se você utiliza outra no backend.
+const URL_API ='http://127.0.0.1:8080/api/' 
+
+function createPosts(data) {
   const posts = [];
-  var d = new Date();
-
-  posts.push({
-    id: crypto.randomUUID(),
-    usuario: "johndoe01",
-    nome: "John Doe",
-    conteudo: "Baniram o Twitter :(",
-    data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear(),
-    comentarios: [
-      {
-      id: crypto.randomUUID(),
-      usuario: "marysue10000",
-      nome: "Mary Sue",
-      conteudo: "Paia né!",
-      data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-      },
-      {
-        id: crypto.randomUUID(),
-        usuario: "elonmusk24",
-        nome: "Elon Musk",
-        conteudo: "I'm sorry brazilians",
-        data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-        }
-    ],
-    curtidas: 1
-  });
-
-  posts.push({
-    id: crypto.randomUUID(),
-    usuario: "johndoe01",
-    nome: "John Doe",
-    conteudo: "Não aguento mais!",
-    data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear(),
-    comentarios: [
-      {
-      id: crypto.randomUUID(),
-      usuario: "marysue10000",
-      nome: "Mary Sue",
-      conteudo: "Eu também não.",
-      data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-      },
-      {
-        id: crypto.randomUUID(),
-        usuario: "elonmusk24",
-        nome: "Elon Musk",
-        conteudo: "Can you guys speak in English?",
-        data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-        }
-    ],
-    curtidas: 2
-  });
-
-
+    for (let i = 0; i < data.posts.length; i++) {
+      posts.push({
+        id: data.posts[i].id,
+        usuario: data.posts[i].usuario,
+        nome: data.posts[i].nome,
+        conteudo: data.posts[i].conteudo,
+        imagem: data.posts[i].imagem,
+        comentarios: data.posts[i].comentarios || [],
+        curtidas: data.posts[i].curtidas || []
+      });
+  }
+  console.log(posts)
   return posts;
 }
 
@@ -68,6 +31,9 @@ function Configuracoes({userData}){
   const [tableData, setTableData] = useState([]);
   const [buttonPopup, setButtonPopup] = useState(false);
   const [buttonDeletePopup, setDeletePopup] = useState(false);
+  const { setUsuario, usuario } = useContext(StoreContext);
+  const { setComunidade, comunidade } = useContext(StoreContext);
+  const { setNome, nome } = useContext(StoreContext);
 
   const { setToken, token } = useContext(StoreContext);
 
@@ -117,7 +83,7 @@ function Configuracoes({userData}){
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setButtonPopup(false);
-        handleGetPosts(event)
+     
 
       })
       .catch(error => {
@@ -133,7 +99,7 @@ function Configuracoes({userData}){
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setDeletePopup(false);
-        handleGetPosts(event)
+     
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -145,10 +111,14 @@ function Configuracoes({userData}){
     event.preventDefault();
     console.log(formData.usuario);
 
-    axios.post('http://127.0.0.1:5000/api/deletaPublicacao', obj)
+    const data = {
+      id : obj.id
+    }
+
+    axios.post('http://127.0.0.1:5000/api/deletaPublicacao', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        handleGetPosts(event)
+ 
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -156,51 +126,27 @@ function Configuracoes({userData}){
 
       
   }
-  const handleGetPosts = (event) => {
+  const handleLoadPosts = (event) => {
 
     event.preventDefault();
-    axios.get('http://127.0.0.1:5000/api/getPublicacoesUsuario')
+      axios.get(URL_API + 'getPublicacoesUsuario', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        params: {
+          usuario: usuario.usuario
+        }
+      })
       .then(response => {
-        console.log('Resposta do servidor:', response.data);     
-        const table = createRandomPosts(response.data)
-        setTableData([...table])     
+        console.log('Resposta do servidor:', response.data);
+        const newPosts = createPosts(response.data)
+        setTableData([...tableData, ...newPosts])
+  
       })
       .catch(error => {
-        console.error('Erro ao enviar dados:', error);
+        console.error('Erro ao receber dados:', error);
       });
       
-  }
-
-  const handleLoadPosts = () => {
-    const posts = [];
-
-    posts.push({
-      id: crypto.randomUUID(),
-      usuario: "johndoe01",
-      nome: "John Doe",
-      conteudo: "Baniram o Twitter :(",
-      data: Date.now(),
-      comentarios: [
-        {
-        id: crypto.randomUUID(),
-        usuario: "marysue10000",
-        nome: "Mary Sue",
-        conteudo: "Paia né!",
-        data: Date.now()
-        },
-        {
-          id: crypto.randomUUID(),
-          usuario: "elonmusk24",
-          nome: "Elon Musk",
-          conteudo: "I'm sorry brazilians",
-          data: Date.now()
-          }
-      ],
-      curtidas: 1
-    });
-
-    const dados_post = createRandomPosts()
-    setTableData([...dados_post])   
   }
 
   const showOptions = (divName) => {
@@ -334,7 +280,7 @@ function Configuracoes({userData}){
             </div>
           </div>
 
-          <div className="delete-post" onLoad={handleGetPosts}>
+          <div className="delete-post" onLoad={handleLoadPosts}>
             <div className="container-options">
             <div className="text">Deletar Publicação</div>
             <div className="post">
