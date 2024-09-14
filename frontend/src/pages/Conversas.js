@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import {withRouter} from 'react-router-dom';
@@ -61,6 +61,7 @@ function Conversas({userData}){
     const [tableData, setTableData] = useState([]);
     const { setToken, token } = useContext(StoreContext);
     const { setNome, nome } = useContext(StoreContext);
+    const { setUsuario, usuario } = useContext(StoreContext);
     const { setComunidade, comunidade } = useContext(StoreContext);
     const { setColor, color } = useContext(StoreContext);
     const [buttonPopup, setButtonPopup] = useState(false);
@@ -86,6 +87,11 @@ function Conversas({userData}){
     
     useEffect(() => {
       handleLoadMessages();
+      const chatMessages = document.querySelector('.chatMessages');
+
+      setTimeout(() => {
+        window.scrollTo(0, chatMessages.scrollHeight);
+      }, 100);
   
       const interval = setInterval(() => {
         handleLoadMessages();
@@ -98,6 +104,7 @@ function Conversas({userData}){
       renderMessages();
     }, [tableData]);
   
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -131,7 +138,8 @@ const handleLoadMessages = () => {
       'Content-Type': 'application/json'
     },
     params: {
-      comunidade: comunidade.comunidade
+      comunidade: comunidade.comunidade,
+      usuario: usuario.usuario
     }
   })
     .then(response => {

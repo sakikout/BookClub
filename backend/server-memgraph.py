@@ -102,7 +102,7 @@ def entrar_em_comunidade():
             reg_community, summary_community, keys_community = consultar_db('CREATE (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
             reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[rel:ESTA_EM]->(c) RETURN rel')
    
-    return reg
+    return jsonify({"status": "success", "data": reg}), 200
 
 @app.route('/api/deletaUsuario', methods=['POST'])
 def delete_usuario():
@@ -180,6 +180,14 @@ def set_usuario():
    
     return reg
 
+def create_notificacao(idNotificacao, usuario, conteudo, data, titulo, comunidade):
+    reg, summary, keys = consultar_db(
+        'MATCH (u:Usuario {usuario: "' + usuario + '"}) '
+        'CREATE (n:Notificacao {id: "'+ idNotificacao +'", usuario: "' + usuario + '", conteudo: "' + conteudo + '", data: "' + data + '", titulo: "'+ titulo +'", comunidade: "'+ comunidade +'"})<-[:TEM_NOTIFICACAO]-(u) '
+        'RETURN n'
+    )
+    return reg
+
 @app.route('/api/criarPublicacao', methods=['POST'])
 def create_publicacao():
     post = request.json  # Os dados do formulário serão enviados como JSON
@@ -194,7 +202,17 @@ def create_publicacao():
   
     reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", imagem: "' + img + '", data: "' + date + '"}) RETURN n')
     post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
-   
+    
+    membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario)-[:ESTA_EM]->(com:Comunidade {nome: "' + comunidade + '"}) RETURN m.usuario')
+    members = [r['m.usuario'] for r in membros]
+    members_not_repeated = list(set(members))
+
+    # Extraindo as propriedades de cada nó 'Usuario'
+    for membro in members_not_repeated:
+        if (membro != username):
+            title_name = "Nova Publicação em " + comunidade
+            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade)
+
     return post
 
 def comentario_to_dict(c):
@@ -272,6 +290,8 @@ def create_curtida():
     print("Dados recebidos:", post)
     usuario_que_curtiu = post['usuario']
     id_post = post['id']
+    date = post['data']
+    comunidade = post['comunidade']
    
     try:
         reg_already_exists, summary_already_exists, keys_already_exists = consultar_db(
@@ -283,9 +303,17 @@ def create_curtida():
         else:  
             reg, summary, keys = consultar_db(
                 'MATCH (n:Usuario {usuario: "' + usuario_que_curtiu + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[rel:CURTIU]->(p) RETURN rel'
-            ) 
+            )
+            membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario), (p:Publicacao {id: "'+ id_post +'"} WHERE m.usuario = p.usuario RETURN m.usuario')
+            members = [r['m.usuario'] for r in membros]
+            members_not_repeated = list(set(members))
+
+            # Extraindo as propriedades de cada nó 'Usuario'
+            for membro in members_not_repeated:
+                title_name = "Nova Curtida em " + comunidade
+                create_notificacao(id_post, membro, " ", date, title_name, comunidade)
             return jsonify({"status": "success", "data": "Curtida feita com sucesso!"}), 200
-    
+
     except Exception as e:
         print("Erro:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -324,8 +352,19 @@ def create_comentario():
     conteudo = post['conteudo']
     date = post['data']
     id_post = post['idPost']
+    comunidade = post['comunidade']
   
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + usuario + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'", usuario: "'+ usuario +'", nome: "'+ nome +'"}]->(p)')
+
+    membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario), (p:Publicacao {id: "'+ id_post +'"}) WHERE m.usuario = p.usuario RETURN m.usuario')
+    members = [r['m.usuario'] for r in membros]
+    members_not_repeated = list(set(members))
+
+        # Extraindo as propriedades de cada nó 'Usuario'
+    for membro in members_not_repeated:
+        if (membro != usuario):
+            title_name = "Novo Comentário em " + comunidade
+            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade)
    
     return jsonify({"status": "success"}), 200
 
@@ -375,6 +414,16 @@ def create_mensagem():
         msgs = [node_to_dict(record['m']) for record in msg]
         msg_received = msgs[-1]  # Assume que o último registro contém a mensagem
         print("Mensagem relacionada à conversa:", msg_received)
+    
+        membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario)-[:ESTA_EM]->(com:Comunidade {nome: "' + comunidade + '"}) RETURN m.usuario')
+        members = [r['m.usuario'] for r in membros]
+        members_not_repeated = list(set(members))
+
+        # Extraindo as propriedades de cada nó 'Usuario'
+        for membro in members_not_repeated:
+            if (membro != usuario):
+                title_name = "Nova Mensagem em " + comunidade
+                create_notificacao(id_message, membro, conteudo, date, title_name, comunidade)
         
         return jsonify({"message": "Mensagem criada e relacionada com sucesso", "data": msg_received}), 200
 
@@ -421,6 +470,44 @@ def get_mensagens():
     except Exception as e:
         print(f"Erro ao obter mensagens: {e}")
         return jsonify({"error": f"Erro interno: {e}"}), 500
+
+
+@app.route('/api/getNotificacoes', methods=['GET'])
+def get_notificacoes():
+    try:
+        # data_received = request.json  # Os dados do formulário serão enviados como JSON
+        # comunidade = data_received['comunidade']
+        user = request.args.get('usuario')
+        reg, summary, keys = consultar_db('MATCH (u:Usuario {usuario: "'+ user +'"})-[:TEM_NOTIFICACAO]->(n:Notificacao) RETURN n')
+
+        # Verificar o que está sendo retornado
+        print("Dados recebidos da consulta:", reg)
+
+        # Extraindo as propriedades de cada nó 'Notificação'
+        #'CREATE (n:Notificacao {id: "'+ idNotificacao +'", usuario: "' + usuario + '", conteudo: "' + conteudo + '", data: "' + data + '", titulo: "'+ titulo +'"})<-[:TEM_NOTIFICACAO]-(u) '
+        notificacoes = []
+        for record in reg:
+            notificacoes_node = record['n']
+            propriedades = {
+                'id': notificacoes_node['id'],
+                'usuario': notificacoes_node['usuario'],
+                'conteudo': notificacoes_node['conteudo'],
+                'titulo': notificacoes_node['titulo'],
+                'data': notificacoes_node['data']
+            }
+            notificacoes.append(propriedades)
+
+
+        # Verificar se as mensagens estão sendo extraídas corretamente
+        print("Notificações extraídas:", notificacoes)
+
+        df_bd1 = pd.DataFrame(notificacoes, columns=['id', 'usuario', 'conteudo', 'data', 'titulo'])
+        return jsonify({"notificacoes": df_bd1.to_dict(orient="records")}), 200
+    
+    except Exception as e:
+        print(f"Erro ao obter mensagens: {e}")
+        return jsonify({"error": f"Erro interno: {e}"}), 500
+
 
 
 # Running app

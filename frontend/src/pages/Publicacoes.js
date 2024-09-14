@@ -170,7 +170,7 @@ const handleInputChangeComment = (event) => {
     axios.post( URL_API + 'criarPublicacao', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        window.alert("Entrada no caixa feita com sucesso!");
+        window.alert("Post feito com sucesso!");
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -188,6 +188,8 @@ const handleInputChangeComment = (event) => {
     return () => clearInterval(interval);
   }, [comunidade]);
 
+
+
   const handleLoadPosts = () => {
 
     axios.get(URL_API + 'getPublicacoes', {
@@ -195,7 +197,8 @@ const handleInputChangeComment = (event) => {
         'Content-Type': 'application/json'
       },
       params: {
-        comunidade: comunidade.comunidade
+        comunidade: comunidade.comunidade,
+        usuario: usuario.usuario
       }
     })
     .then(response => {
@@ -225,10 +228,12 @@ const handleInputChangeComment = (event) => {
 
     const data = {
       id: obj.id,
-      usuario: usuario.usuario
+      usuario: usuario.usuario,
+      comunidade: comunidade.comunidade,
+      data: getDateNow()
     }
 
-    console.log("Dados senod enviados para curtida: "+ data.id + " " + data.usuario);
+    console.log("Dados sendo enviados para curtida: "+ data.id + " " + data.usuario);
 
     // obj.curtidas.append({usuario: usuario.usuario});
 
@@ -258,7 +263,8 @@ const handleInputChangeComment = (event) => {
       nome: formComment.nome,
       usuario: formComment.usuario,
       conteudo: formComment.conteudo,
-      data: formComment.data
+      data: formComment.data,
+      comunidade: comunidade.comunidade
     }
 
     console.log("Comentário a ser enviado: ");
