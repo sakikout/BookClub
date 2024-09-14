@@ -470,11 +470,21 @@ h1 {
   padding: 10px;
 }
 
+.modalLabel{
+  color: #D64695;
+  pointer-events: none;
+  bottom: 10px;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  padding: 10px;
+}
+
 .container-modal{
   padding: 10px;
   position: relative;
-  display: inline;
+  display: flex;
   justify-content: center;
+  flex-direction: column;
   
 }
 

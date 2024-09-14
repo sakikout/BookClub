@@ -4,6 +4,10 @@ import datetime
 import json
 import pandas as pd
 
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+
 #A biblioteca do Memgraph (Não sei porque é o neo4j mas funciona) 
 from neo4j import GraphDatabase
  
@@ -12,32 +16,36 @@ datahj = datetime.datetime.now()
 # Initializing flask app
 app = Flask(__name__)
 CORS(app)
-#CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
-#A url tem que ser com esse bolt mesmo
 URI = "bolt://localhost:7687"
 AUTH = ("", "")
+
+# Configurações do Cloudinary
+cloudinary.config(
+  cloud_name = "dvks6kvfn", 
+  api_key = "949973423629945", 
+  api_secret = "uau5kTgXfthklnl1st74MoQzRA4"
+)
 
 # Função para criar conexão no banco
 # Vamos usar só essa função pra tudo, não tem diferença de inserir/criar nem nada
 def consultar_db(consulta):
     with GraphDatabase.driver(URI, auth=AUTH) as client:
-        # Check the connection
         client.verify_connectivity()
-        #consulta = 'CREATE (n:Usuario {usuario: "Amanda123", nome: "Amanda", senha: "1234", avatar: "...", descricao: "uma descricao", cor: "rosa"}) RETURN n.nome AS name'
         records, summary, keys = client.execute_query(consulta)
     
-    #Exemplo de print, todos vem como array
-    #for record in records:
-        #print(record["name"])
     return records, summary, keys
-
-#Esse é o teste para ver se a conexão funciona
-#consultar_db("consulta")
 
 def node_to_dict(node):
     """Converte um objeto Node do Neo4j para um dicionário."""
     return dict(node)
+
+def upload_image(img):
+    result = cloudinary.uploader.upload(img)
+    # O URL da imagem na nuvem será retornado
+    image_url = result.get("secure_url")
+
+    return image_url
 
 ##################   ROTAS   ######################
  
@@ -47,18 +55,19 @@ def send_data():
     print("Dados recebidos:", data)
     login = data['usuario']
     senha = data['senha']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + login + '", senha: "' + str(senha)+ '"}) RETURN n.nome AS nome, n.usuario AS usuario')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + login + '", senha: "' + str(senha)+ '"}) RETURN n.nome AS nome, n.usuario AS usuario, n.foto AS foto')
     print("Dados banco:")
     for record in reg:
         print(record["nome"])
     if(len(reg) > 0):
-        df_bd = pd.DataFrame(reg, columns=['usuario', 'nome'])
+        df_bd = pd.DataFrame(reg, columns=['usuario', 'nome', 'foto'])
         df_bd.head()
         df_bd = df_bd.to_dict()
         data = {'error': False,
                 'option': 1,
                 'usuario': df_bd['usuario'][0],
-                'nome': df_bd['nome'][0]}
+                'nome': df_bd['nome'][0],
+                'foto': df_bd['foto'][0]}
     else:
        df_bd = {}
        data = {'error': True,
@@ -67,20 +76,21 @@ def send_data():
 
 @app.route('/api/criaUsuario', methods=['POST'])
 def create_usuario():
-    usuario = request.json  # Os dados do formulário serão enviados como JSON
-    print("Dados recebidos:", usuario)
-    username = usuario['usuario']
-    nome = usuario['nome']
-    senha = usuario['senha']
-    #Tirar dados que não sao usados aqui e coloca-los só ao atualizar 
-    #img = "..."
-    #desc = "..."
-    #color = "..."
+    if 'foto' not in request.files or 'nome' not in request.form or 'senha' not in request.form:
+        return jsonify({"error": "Imagem, nome ou senha não foram enviados"}), 400
+    
+    img = request.files['foto']
+    username = request.form['usuario']
+    nome = request.form['nome'] 
+    senha = request.form['senha']
+
+    link = upload_image(img)
+    
     reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.nome AS nome, n.usuario AS usuario')
     if (reg_already_exist):
         return reg_already_exist
     else:
-        reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + '"})')
+        reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + '", foto: "' + link + '"})')
         return reg
 
 @app.route('/api/entraComunidade', methods=['POST'])
@@ -107,7 +117,7 @@ def entrar_em_comunidade():
 @app.route('/api/getUsuarios', methods=['GET'])
 def get_usuarios():
     reg, summary, keys = consultar_db('MATCH (n:Usuario) RETURN n')
-    df_bd1 = pd.DataFrame(reg, columns=['usuario', 'nome', 'senha', 'descricao', 'avatar', 'cor'])
+    df_bd1 = pd.DataFrame(reg, columns=['usuario', 'nome', 'senha', 'descricao', 'foto', 'cor'])
     df_bd1.head()
     df_bd1 = df_bd1.to_dict()
     print("Dados banco:", df_bd1)
@@ -119,7 +129,7 @@ def get_usuarios():
             'nome': df_bd1['nome'][i],
             'senha': df_bd1['senha'][i],
             'descricao': df_bd1['descricao'][i],
-            'avatar': df_bd1['avatar'][i],
+            'foto': df_bd1['foto'][i],
             'cor': df_bd1['cor'][i]
         })
         

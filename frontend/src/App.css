@@ -53,11 +53,85 @@ label {
   display: flex;
   width: calc(100px + 2vmin);
   justify-content: center;
+  cursor: pointer;
+}
+
+.circle-input-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%; /* Torna o input redondo */
+  background-color: #ddd; /* Cor de fundo */
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.circle-input-label:hover {
+  background-color: #ccc; /* Cor ao passar o mouse */
+}
+
+.circle-input {
+  display: none; /* Esconde o input padrão */
+}
+
+.circle-input-label::before {
+  content: '+';
+  font-size: 40px;
+  color: #888;
+}
+
+.circle-input-label-after::before {
+  content: 'Uploaded';
+  font-size: 10px;
+  color: #888;
+}
+
+.form-row-sing{
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.form-row-sing {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.input-foto {
+  flex: 0 0 auto;
+  margin-right: 20px;
+}
+
+.inputs-right {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-modal {
+  margin-bottom: 10px;
+}
+
+.circle-input {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .logIn:focus, .logIn:hover {
   background-color: #e62b92;
   box-shadow:0 0 .25em #e62b92;
+}
+
+.divButtons{
+  display: flex; /* Usa flexbox para alinhar os botões lado a lado */
+  gap: 10px; /* Espaço entre os botões */
+  height: 100%;
+  /*width: 100dvh;*/
 }
 
 .signIn:focus, .signIn:hover {
