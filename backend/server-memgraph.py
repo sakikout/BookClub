@@ -166,12 +166,36 @@ def set_senha_usuario():
     senha = usuario['senha']
     img = usuario['avatar']
     desc = usuario['descricao']
-    color = usuario['color']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.senha = "' + senha + '" RETURN n)')
+    color = usuario['cor']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.senha = "' + senha + '" RETURN n.senha')
    
-    return reg
+    return jsonify({"status": "success", "data": reg}), 200
 
-@app.route('/api/setImagem', methods=['POST'])
+@app.route('/api/getSenha', methods=['POST'])
+def get_senhar_usuario():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    nome = usuario['nome']
+    senha = usuario['senha']
+    img = usuario['avatar']
+    desc = usuario['descricao']
+    color = usuario['cor']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.senha')
+   
+    return jsonify({"status": "success", "data": reg}), 200
+
+def update_avatar(user, avatar):
+
+    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacoes {usuario: "' + user + '"}) SET n.avatar = "' + avatar + '" RETURN n.avatar')
+    reg_comments, summary_comments, keys_comments = consultar_db('MATCH (n:Comentario {usuario: "' + user + '"}) SET n.avatar = "' + avatar + '" RETURN n.avatar')
+    reg_messages, summary_messages, keys_messages = consultar_db('MATCH (n:Mensagem {usuario: "' + user + '"}) SET n.avatar = "' + avatar + '" RETURN n.avatar')
+
+    data = [reg_publicacoes, reg_comments,  reg_messages]
+
+    return jsonify({"status": "success", "data": data}), 200
+
+@app.route('/api/setAvatar', methods=['POST'])
 def set_avatar_usuario():
     usuario = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", usuario)
@@ -180,13 +204,14 @@ def set_avatar_usuario():
     senha = usuario['senha']
     img = usuario['avatar']
     desc = usuario['descricao']
-    color = usuario['color']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.avatar = "' + img + '" RETURN n)')
-   
-    return reg
+    color = usuario['cor']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.avatar = "' + img + '" RETURN n.avatar')
+    update = update_avatar(username, img)
 
-@app.route('/api/setUsuario', methods=['POST'])
-def set_usuario():
+    return jsonify({"status": "success", "data": reg}), 200
+
+@app.route('/api/getAvatar', methods=['POST'])
+def get_avatar_usuario():
     usuario = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", usuario)
     username = usuario['usuario']
@@ -194,10 +219,48 @@ def set_usuario():
     senha = usuario['senha']
     img = usuario['avatar']
     desc = usuario['descricao']
-    color = usuario['color']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.usuario = "' + usuario + '" RETURN n)')
+    color = usuario['cor']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.avatar')
    
-    return reg
+   
+    return jsonify({"status": "success", "data": reg}), 200
+
+def update_usuario(oldUser, newUser):
+
+    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacoes {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
+    reg_comments, summary_comments, keys_comments = consultar_db('MATCH (n:Comentario {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
+    reg_messages, summary_messages, keys_messages = consultar_db('MATCH (n:Mensagem {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
+
+    data = [reg_publicacoes, reg_comments,  reg_messages]
+
+    return jsonify({"status": "success", "data": data}), 200
+
+@app.route('/api/setUsuario', methods=['POST'])
+def set_usuario():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    old_usuario = usuario['oldUsuario']
+    nome = usuario['nome']
+    senha = usuario['senha']
+    img = usuario['avatar']
+    desc = usuario['descricao']
+    color = usuario['cor']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + old_usuario + '"}) SET n.usuario = "' + username + '" RETURN n.usuario')
+    update = update_usuario(old_usuario, username)
+
+    return jsonify({"status": "success", "data": reg}), 200
+
+
+def update_nome(usuario, newNome):
+
+    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacoes {usuario: "' + usuario + '"}) SET n.nome = "' + newNome + '" RETURN n.nome')
+    reg_comments, summary_comments, keys_comments = consultar_db('MATCH (n:Comentario {usuario: "' + usuario + '"}) SET n.nome = "' + newNome + '" RETURN n.nome')
+    reg_messages, summary_messages, keys_messages = consultar_db('MATCH (n:Mensagem {usuario: "' + usuario + '"}) SET n.nome = "' + newNome + '" RETURN n.nome')
+
+    data = [reg_publicacoes, reg_comments,  reg_messages]
+
+    return jsonify({"status": "success", "data": data}), 200
 
 @app.route('/api/setNome', methods=['POST'])
 def set_nome():
@@ -205,13 +268,16 @@ def set_nome():
     print("Dados recebidos:", usuario)
     username = usuario['usuario']
     nome = usuario['nome']
+    old_nome = usuario['oldNome']
     senha = usuario['senha']
     img = usuario['avatar']
     desc = usuario['descricao']
-    color = usuario['color']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.nome = "' + nome + '" RETURN n)')
+    color = usuario['cor']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.nome = "' + nome + '" RETURN n.nome')
+    update = update_nome(username, nome)
    
-    return reg
+    return jsonify({"status": "success", "data": reg}), 200
+
 
 @app.route('/api/deleteUsuario', methods=['POST'])
 def delete_usuario():
@@ -222,10 +288,10 @@ def delete_usuario():
     senha = usuario['senha']
     img = usuario['avatar']
     desc = usuario['descricao']
-    color = usuario['color']
+    color = usuario['cor']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) DETACH DELETE n)')
    
-    return reg
+    return jsonify({"status": "success", "data": reg}), 200
 
 
 def create_notificacao(idNotificacao, usuario, conteudo, data, titulo, comunidade):

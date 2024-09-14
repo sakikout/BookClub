@@ -34,13 +34,17 @@ function Configuracoes({userData}){
   const { setUsuario, usuario } = useContext(StoreContext);
   const { setComunidade, comunidade } = useContext(StoreContext);
   const { setNome, nome } = useContext(StoreContext);
+  const { setColor, color} = useContext(StoreContext);
 
   const { setToken, token } = useContext(StoreContext);
 
   const[formData, setFunc] = useState({
-    usuario: '',
-    nome: '',
-    imagemPerfil: '',
+    usuario: usuario.usuario,
+    nome: nome.nome,
+    descricao: '',
+    avatar: '',
+    senha: '',
+    cor: color.color
   });
 
   const handleInputChange = (event) => {
@@ -79,7 +83,7 @@ function Configuracoes({userData}){
     event.preventDefault();
     console.log(formData.usuario);
 
-    axios.post('http://127.0.0.1:5000/api/criaUsario', formData)
+    axios.post(URL_API + 'criaUsario', formData)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setButtonPopup(false);
@@ -95,7 +99,7 @@ function Configuracoes({userData}){
     event.preventDefault();
     console.log(formData.usuario);
 
-    axios.post('http://127.0.0.1:5000/api/deletaUsuario', formData)
+    axios.post(URL_API + 'deletaUsuario', formData)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setDeletePopup(false);
@@ -107,6 +111,120 @@ function Configuracoes({userData}){
 
       
   }
+
+  const handleSubmitUsuario = (event) => {
+    event.preventDefault();
+    console.log(formData.usuario);
+
+    const data = {
+      oldUsuario: usuario.usuario,
+      usuario: formData.usuario,
+      nome: formData.nome,
+      descricao: formData.descricao,
+      avatar: formData.avatar,
+      senha: formData.senha,
+      cor: formData.cor
+    }
+
+    axios.post(URL_API + 'setUsuario', data)
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);
+        setUsuario({usuario: response.data.data[0][0]})
+        console.log(usuario.usuario)
+        setDeletePopup(false);
+     
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+
+      
+  }
+
+  const handleSubmitNome = (event) => {
+    event.preventDefault();
+    console.log(formData.usuario);
+
+    const data = {
+      oldNome: nome.nome,
+      usuario: formData.usuario,
+      nome: formData.nome,
+      descricao: formData.descricao,
+      avatar: formData.avatar,
+      senha: formData.senha,
+      cor: formData.cor
+    }
+
+    axios.post(URL_API + 'setNome', data)
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);
+        setNome({nome: response.data.data[0][0]})
+        console.log(nome.nome)
+        setDeletePopup(false);
+     
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+
+      
+  }
+
+  const handleSubmitAvatar = (event) => {
+    event.preventDefault();
+    console.log(formData.usuario);
+
+    const data = {
+      usuario: formData.usuario,
+      nome: formData.nome,
+      descricao: formData.descricao,
+      avatar: formData.avatar,
+      senha: formData.senha,
+      cor: formData.cor
+    }
+
+    axios.post(URL_API + 'setAvatar', data)
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);
+        console.log(response.data.data[0][0])
+        setDeletePopup(false);
+     
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+
+      
+  }
+
+  const handleSubmitSenha = (event) => {
+    event.preventDefault();
+    console.log(formData.usuario);
+
+    const data = {
+      oldSenha: usuario.usuario,
+      usuario: formData.usuario,
+      nome: formData.nome,
+      descricao: formData.descricao,
+      avatar: formData.avatar,
+      senha: formData.senha,
+      cor: formData.cor
+    }
+
+    axios.post(URL_API + 'setSenha', data)
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);
+        console.log(response.data.data[0][0])
+        setDeletePopup(false);
+     
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+
+      
+  }
+
   const handleSubmitDeletePost = (event, obj) => {
     event.preventDefault();
     console.log(formData.usuario);
@@ -115,9 +233,10 @@ function Configuracoes({userData}){
       id : obj.id
     }
 
-    axios.post('http://127.0.0.1:5000/api/deletaPublicacao', data)
+    axios.post(URL_API + 'deletaPublicacao', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
+        console.log(response.data.data[0][0])
  
       })
       .catch(error => {
@@ -186,7 +305,7 @@ function Configuracoes({userData}){
           <div className="change-user">
             <div className="container-options">
             <div className="text">Alterar Usuário</div>
-          <form onSubmit={handleSubmitModal}>
+          <form onSubmit={handleSubmitUsuario}>
             <div class="form-row-options">
               <div class = "input-options">
                 <label className='optionsLabel' for="usuario">
@@ -210,7 +329,7 @@ function Configuracoes({userData}){
           <div className="change-name">
             <div className="container-options">
             <div className="text">Alterar Nome</div>
-            <form onSubmit={handleSubmitModal}>
+            <form onSubmit={handleSubmitNome}>
             <div class="form-row-options">
             <div class="input-options">
                 <label className='optionsLabel' for="nome">
@@ -234,7 +353,7 @@ function Configuracoes({userData}){
           <div className="change-image">
             <div className="container-options">
             <div className="text">Alterar Imagem de Perfil</div>
-            <form onSubmit={handleSubmitModal}>
+            <form onSubmit={handleSubmitAvatar}>
             <div class="form-row-options">
             <div class="input-options-image">
                 <label className='optionsLabel' for="avatar">
@@ -259,7 +378,7 @@ function Configuracoes({userData}){
           <div className="change-password">
             <div className="container-options">
             <div className="text">Alterar Senha</div>
-            <form onSubmit={handleSubmitModal}>
+            <form onSubmit={handleSubmitSenha}>
             <div class="form-row-options">
                 <div class = "input-options">
                   <label className='optionsLabel' for="senha">
@@ -307,7 +426,7 @@ function Configuracoes({userData}){
           <div className="change-account">
             <div className="container-options">
             <div className="text">Deletar Conta</div>
-            <form onSubmit={handleSubmitModal}>
+            <form onSubmit={handleSubmitDelete}>
             <div class="form-row-options">
                 <div class = "input-options">
                   <label className='optionsLabel' for="senha">
