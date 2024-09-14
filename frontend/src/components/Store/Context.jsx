@@ -10,7 +10,9 @@ const StoreContext = createContext({
   color: null,
   setColor: () => {},
   usuario: null,
-  setUsuario: () => {}
+  setUsuario: () => {},
+  foto: null,
+  setFoto: () => {}
 });
 
 export default StoreContext;

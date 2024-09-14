@@ -117,6 +117,7 @@ function Publicacoes({userData}){
   const { setUsuario, usuario } = useContext(StoreContext);
   const { setComunidade, comunidade } = useContext(StoreContext);
   const { setNome, nome } = useContext(StoreContext);
+  const { setFoto, foto } = useContext(StoreContext);
 
   const[formData, setPost] = useState({
     id: crypto.randomUUID(),
@@ -290,7 +291,7 @@ const handleInputChangeComment = (event) => {
             <p className="header-content">Você está em {comunidade.comunidade}</p>  
           </header>
           <div className="post-header"> 
-           <div className="profile-pic"></div> 
+           <div className="profile-pic"><img src={foto.foto} alt="Uploaded" className="profile-pic"/></div> 
              <div className="user-info"> 
                 <div className="full-name">{nome.nome}</div> 
                 <div className="username">@{usuario.usuario}</div>
@@ -323,7 +324,14 @@ const handleInputChangeComment = (event) => {
               <div className='postagem' key={obj.id}>
               <div className={'post-top-' + obj.id}>
               <div className="post-header"> 
-                 <div className="profile-pic"></div> 
+
+                <div>
+                  {obj.foto ? 
+                    (<img src={obj.foto} alt="Uploaded" className="profile-pic"/>) 
+                    :(
+                      <div className="profile-pic"></div>
+                    )}
+                </div>
                    <div className="user-info"> 
                       <div className="full-name">{obj.nome}</div> 
                       <div className="username">@{obj.usuario}</div>
@@ -355,7 +363,14 @@ const handleInputChangeComment = (event) => {
                   {obj.comentarios.map((comment) =>{
                     return ( <div className="comment" key={comment.id}> 
                       <div className="post-header"> 
-                          <div className="profile-pic-comment"></div> 
+
+                      <div>
+                        {comment.foto ? 
+                          (<img src={comment.foto} alt="Uploaded" className="profile-pic-comment"/>) 
+                          :(
+                            <div className="profile-pic-comment"></div>
+                          )}
+                      </div> 
                           <div className="user-info-comment"> 
                             <div className="full-name">{comment.nome}</div> 
                             <div className="username">@{comment.usuario}</div>
@@ -377,7 +392,14 @@ const handleInputChangeComment = (event) => {
               </header>
               <form onSubmit={handleSubmitComment}>
               <div className="post-header-comment"> 
-                <div className="profile-pic-comment"></div> 
+                <div>
+                  {foto.foto ? 
+                    (<img src={foto.foto} alt="Uploaded" className="profile-pic-comment"/>) 
+                    :(
+                      <div className="profile-pic-comment"></div>
+                  )}
+                  
+                </div> 
                   <div className="user-info-comment"> 
                     <div className="full-name">{nome.nome}</div> 
                     <div className="username">@{usuario.usuario}</div>

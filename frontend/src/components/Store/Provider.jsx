@@ -6,6 +6,7 @@ const StoreProvider = ({ children }) => {
   const [token, setToken] = useStorage('token');
   const [usuario, setUsuario] = useStorage('usuario');
   const [nome, setNome] = useStorage('nome');
+  const [foto, setFoto] = useStorage('nome');
   const [ comunidade, setComunidade] = useStorage('comunidade');
   const [color, setColor] = useStorage('color');
 
@@ -21,7 +22,9 @@ const StoreProvider = ({ children }) => {
         color,
         setColor,
         usuario,
-        setUsuario
+        setUsuario,
+        foto,
+        setFoto
       }}
     >
       {children}
