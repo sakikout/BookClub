@@ -73,14 +73,14 @@ function Sidebar ({userData, newMessage}) {
 				</a>
 
 				<div className="options-below">
-				<a class="item-a">
+				<a className="item-a">
 					<span className="item" onClick={(event) => newMessage(event, 4)}>
 					<img src={settings} className='icons' alt="Configurações" width="30px" height="30px"></img>
 					<div className="text-span">Configurações</div></span>
 				
 				</a>
 				
-				<a class="item-a">
+				<a className="item-a">
 					<span className="item" onClick={() => setToken(null)}>
 					<img src={logoff} className='icons' alt="Encerrar" width="30px" height="30px"></img>
 					<div className="text-span">Encerrar</div></span>

@@ -99,20 +99,25 @@ def entrar_em_comunidade():
     print("Dados recebidos:", usuario)
     username = usuario['usuario']
     comunidade = usuario['comunidade']
+    img = usuario['comunidadeImg']
+    id = usuario['id']
 
     reg_community, summary_community, keys_community = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
+    print("reg1", reg_community)
     reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"})-[rel:ESTA_EM]->(c:Comunidade {nome: "'+ comunidade + '"}) RETURN rel')
+    print("reg2", reg_already_exist)
 
     if (reg_already_exist):
-        return reg_already_exist
+        return jsonify({"status": "success", "data": 'Usuário já na comunidade'}), 200
     else:
         if(reg_community):
             reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[rel:ESTA_EM]->(c) RETURN rel')
+            print("reg3", reg)
         else:
-            reg_community, summary_community, keys_community = consultar_db('CREATE (c:Comunidade {nome: "'+ comunidade + '"}) RETURN c')
+            reg_community, summary_community, keys_community = consultar_db('CREATE (c:Comunidade {nome: "'+ comunidade + '", img: "'+ img + '", id: "'+ str(id) + '"}) RETURN c')
             reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}), (c:Comunidade {nome: "'+ comunidade + '"}) CREATE (n)-[rel:ESTA_EM]->(c) RETURN rel')
    
-    return jsonify({"status": "success", "data": reg}), 200
+    return jsonify({"status": "success", "data": "Usuário entrou na comunidade"}), 200
 
 @app.route('/api/getUsuarios', methods=['GET'])
 def get_usuarios():
@@ -140,22 +145,28 @@ def get_usuarios():
 def get_comunidades_de_usuario():
     data = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", data)
-    id_user = data['usuario']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[:ESTA_EM]->(c:Comunidade) RETURN c')
-    df_bd1 = pd.DataFrame(reg, columns=['id','nome'])
-    df_bd1.head()
-    df_bd1 = df_bd1.to_dict()
-    print("Dados banco:", df_bd1)
-    dict_communities = []
     
-    for i in range(len(df_bd1['id'])):
-    #for operador in df_bd1:
-        dict_communities.append({'id': df_bd1['id'][i],
-            'nome': df_bd1['nome'][i],
-        })
+    id_user = data['usuario']
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[:ESTA_EM]->(c:Comunidade) RETURN c.id AS id, c.nome AS nome, c.img AS img;')
+    print(reg)
+
+    if(len(reg) > 0):
+        com = []
+        for r in reg:
+            com.append({
+                'id': r['id'],
+                'name': r['nome'],
+                'img': r['img']
+            }) 
         
-    print("Dados retorno:", dict_communities)
-    return json.dumps(dict_communities)
+        data = {'error': False,
+                'comunidades': com}
+    else:
+       df_bd = {}
+       data = {'error': True,
+               'mensage': 'Não foi possivel encontrar as comunidades'}
+        
+    return data
 
 @app.route('/api/sairComunidade', methods=['POST'])
 def sair_de_comunidade():

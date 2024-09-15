@@ -306,8 +306,8 @@ function Configuracoes({userData}){
             <div className="container-options">
             <div className="text">Alterar Usuário</div>
           <form onSubmit={handleSubmitUsuario}>
-            <div class="form-row-options">
-              <div class = "input-options">
+            <div className="form-row-options">
+              <div className = "input-options">
                 <label className='optionsLabel' for="usuario">
                 Novo Usuário:
                 </label>
@@ -330,8 +330,8 @@ function Configuracoes({userData}){
             <div className="container-options">
             <div className="text">Alterar Nome</div>
             <form onSubmit={handleSubmitNome}>
-            <div class="form-row-options">
-            <div class="input-options">
+            <div className="form-row-options">
+            <div className="input-options">
                 <label className='optionsLabel' for="nome">
                   Novo Nome:
                 </label>
@@ -354,8 +354,8 @@ function Configuracoes({userData}){
             <div className="container-options">
             <div className="text">Alterar Imagem de Perfil</div>
             <form onSubmit={handleSubmitAvatar}>
-            <div class="form-row-options">
-            <div class="input-options-image">
+            <div className="form-row-options">
+            <div className="input-options-image">
                 <label className='optionsLabel' for="avatar">
                 </label>
                 <input 
@@ -379,8 +379,8 @@ function Configuracoes({userData}){
             <div className="container-options">
             <div className="text">Alterar Senha</div>
             <form onSubmit={handleSubmitSenha}>
-            <div class="form-row-options">
-                <div class = "input-options">
+            <div className="form-row-options">
+                <div className = "input-options">
                   <label className='optionsLabel' for="senha">
                     Nova Senha:
                   </label>
@@ -427,8 +427,8 @@ function Configuracoes({userData}){
             <div className="container-options">
             <div className="text">Deletar Conta</div>
             <form onSubmit={handleSubmitDelete}>
-            <div class="form-row-options">
-                <div class = "input-options">
+            <div className="form-row-options">
+                <div className = "input-options">
                   <label className='optionsLabel' for="senha">
                     Insira sua senha:
                   </label>

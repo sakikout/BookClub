@@ -22,7 +22,7 @@ function Formulario({navigation}){
 
   //FormData do login
   const [formData, setFormData] = useState({
-      usuario: '2001', 
+      usuario: 'Usuário...', 
       senha: '123', 
   });
 
@@ -94,8 +94,8 @@ function Formulario({navigation}){
     .then(response => {
       if(response.data.error !== true){
         setToken({token: 1});
-        setUsuario({usuario: response.data.nome});
-        setNome({nome: response.data.usuario});
+        setUsuario({usuario: response.data.usuario});
+        setNome({nome: response.data.nome});
         setFoto({foto: response.data.foto});
         console.log(response.data)
         if (response.data.color){

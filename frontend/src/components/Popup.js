@@ -7,7 +7,7 @@ function Popup(props) {
         <div className="popup">
             <div className="popup-inner">
                 <button className="close-btn" onClick={() => props.setTrigger(false)}>
-                    <img src={closebtn} class="closebtn" alt='Fechar'></img>
+                    <img src={closebtn} className="closebtn" alt='Fechar'></img>
                 </button>
                 {props.children}
             </div>
