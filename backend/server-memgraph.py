@@ -76,7 +76,7 @@ def send_data():
 
 @app.route('/api/criaUsuario', methods=['POST'])
 def create_usuario():
-    if 'foto' not in request.files or 'nome' not in request.form or 'senha' not in request.form:
+    if 'usuario' not in request.form or 'nome' not in request.form or 'senha' not in request.form:
         return jsonify({"error": "Imagem, nome ou senha não foram enviados"}), 400
     
     img = request.files['foto']

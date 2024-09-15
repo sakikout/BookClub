@@ -40,45 +40,6 @@ function Comunidades({navigation}){
         navigate("home",  { replace: false });
     };
 
-
-    const handleSubmit = (event) => {
-      
-    /*
-      axios.post('http://127.0.0.1:5000/api/login', formData)
-      .then(response => {
-        
-        if(response.data.error != true){
-          if(response.data.option == 1){
-            setToken({token: 1});
-            setCpf({cpf: response.data.cpfop});
-            setNome({nome: response.data.opnome});
-            navigate("Home",  { replace: false });
-          } else if(response.data.option == 2){
-            setToken({token: 2});
-            setCpf({cpf: response.data.cpfge});
-            setNome({nome: response.data.gernome});
-            navigate("Home",  { replace: false });
-          } else if(response.data.option == 3){
-            setToken({token: 3});
-            setCpf({cpf: response.data.cpfrep});
-            setNome({nome: response.data.repnome});
-            navigate("Home",  { replace: false });
-          }
-          
-        } else {
-          window.alert("Erro ao fazer login! verifique seu usuario e senha e tente novamente.");
-        }
-        
-      })
-      .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-      });
-      */
-        navigate("home",  { replace: false });
-  
-        event.preventDefault();
-      };
-
     return (
       <div className="principal">
         <div className="bg"></div>
