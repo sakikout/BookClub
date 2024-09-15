@@ -32,6 +32,7 @@ Flask-Cors==4.0.0
 pandas==2.1.4
 pymgclient==1.3.1
 neo4j==5.24.0
+cloudinary==1.41.0
 ````
 Caso tenha algum problema, todos podem ser instalados usando o comando `pip install ...`
 
