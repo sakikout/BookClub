@@ -445,7 +445,7 @@ def get_publicacoes():
                 'usuario': post_node['usuario'],
                 'conteudo': post_node['conteudo'],
                 'imagem': post_node['imagem'],
-                "curtidas": post_node["curtidas"],
+                "curtidas": record["curtidas"],
                 'data': post_node['data'],
                 "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
             }
