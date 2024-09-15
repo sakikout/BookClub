@@ -88,10 +88,10 @@ def create_usuario():
     
     reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.nome AS nome, n.usuario AS usuario')
     if (reg_already_exist):
-        return reg_already_exist
+        return jsonify({"error": True, "message": "Usuário já existe."}), 500
     else:
         reg, summary, keys = consultar_db('CREATE (n:Usuario {usuario: "' + username + '", nome: "' + nome + '", senha: "' + senha + '", foto: "' + link + '"})')
-        return reg
+        return jsonify({"status": "success", "message": "Usuário criado."}), 200
 
 @app.route('/api/entraComunidade', methods=['POST'])
 def entrar_em_comunidade():
@@ -128,7 +128,7 @@ def get_usuarios():
     print("Dados banco:", df_bd1)
     dict_users = []
     
-    for i in range(len(df_bd1['cpfop'])):
+    for i in range(len(df_bd1['usuario'])):
     #for operador in df_bd1:
         dict_users.append({'usuario': df_bd1['usuario'][i],
             'nome': df_bd1['nome'][i],
@@ -141,13 +141,71 @@ def get_usuarios():
     print("Dados retorno:", dict_users)
     return json.dumps(dict_users)
 
-@app.route('/api/getComunidadesUsuario', methods=['POST'])
-def get_comunidades_de_usuario():
-    data = request.json  # Os dados do formulário serão enviados como JSON
-    print("Dados recebidos:", data)
+@app.route('/api/criaComunidade', methods=['POST'])
+def create_comunidade():
+    print(request.json)
+    img = request.json['img']
+    id_com = request.json['id']
+    nome = request.json['name'] 
     
-    id_user = data['usuario']
+    reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (c:Comunidade) WHERE c.nome = "' + nome + '" RETURN c')
+    print(reg_already_exist)
+    if (reg_already_exist):
+        reg_con_already_exist, summary_con_already_exist, keys_con_already_exist = consultar_db('MATCH (c:Comunidade {nome: "' + nome + '"})-[rel:TEM_CONVERSA]->(n:Conversa) RETURN rel AS relacao_existe')
+        if (reg_con_already_exist):
+            comunidade_node = reg_already_exist[0]
+            comunidade_dict = comunidade_node['c']
+            return jsonify({"status": "success", "message": "Comunidade já existe.", "data": node_to_dict(comunidade_dict)}), 200
+        else:
+            reg_new_con, summary_new_con, keys_new_con = consultar_db('MATCH (c:Comunidade {nome: "' + nome + '"}) CREATE (n:Conversa) CREATE (c)-[rel:TEM_CONVERSA]->(n) RETURN rel AS relacao_existe')
+            if (reg_new_con):
+                comunidade_node = reg_already_exist[0]
+                comunidade_dict = comunidade_node['c']
+                return jsonify({"status": "success", "message": "Conversa da comunidade criada.", "data": node_to_dict(comunidade_dict)}), 200
+            else:
+                return jsonify({"error": True, "message": "Erro ao criar conversa da comunidade."}), 500
+    else:
+        reg, summary, keys = consultar_db('CREATE (n:Comunidade {id: "' + id_com + '", nome: "' + nome + '", img: "' + img + '"}) RETURN n')
+        reg_new_con, summary_new_con, keys_new_con = consultar_db('MATCH (c:Comunidade {nome: "' + nome + '"}) CREATE (n:Conversa) CREATE (c)-[rel:TEM_CONVERSA]->(n) RETURN rel AS relacao_existe')
+        if (reg_new_con and reg):
+            comunidade_node = reg[0]
+            comunidade_dict = comunidade_node['c']
+            return jsonify({"status": "success", "message": "Comunidade e conversa da comunidade criada.", "data": node_to_dict(comunidade_dict)}), 200
+        elif (reg and not reg_new_con):
+            return jsonify({"error": True, "message": "Erro ao criar conversa da comunidade."}), 500
+        
+        else:
+            return jsonify({"error": True, "message": "Erro ao criar comunidade e conversa da comunidade."}), 500
+       
+@app.route('/api/getComunidadesUsuario', methods=['GET'])
+def get_comunidades_de_usuario():
+    comunidade = request.args.get('comunidade')
+    id_user = request.args.get('usuario')
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + id_user +'"})-[:ESTA_EM]->(c:Comunidade) RETURN c.id AS id, c.nome AS nome, c.img AS img;')
+    print(reg)
+
+    if(len(reg) > 0):
+        com = []
+        for r in reg:
+            com.append({
+                'id': r['id'],
+                'name': r['nome'],
+                'img': r['img']
+            }) 
+        
+        data = {'error': False,
+                'comunidades': com}
+    else:
+       df_bd = {}
+       data = {'error': True,
+               'mensage': 'Não foi possivel encontrar as comunidades'}
+        
+    return data
+    
+
+@app.route('/api/getComunidades', methods=['GET'])
+def get_comunidades():
+    reg, summary, keys = consultar_db('MATCH (c:Comunidade) RETURN c.id AS id, c.nome AS nome, c.img AS img;')
     print(reg)
 
     if(len(reg) > 0):
@@ -185,7 +243,7 @@ def set_senha_usuario():
     username = usuario['usuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario['foto']
     desc = usuario['descricao']
     color = usuario['cor']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.senha = "' + senha + '" RETURN n.senha')
@@ -199,7 +257,7 @@ def get_senhar_usuario():
     username = usuario['usuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario['foto']
     desc = usuario['descricao']
     color = usuario['cor']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.senha')
@@ -208,9 +266,9 @@ def get_senhar_usuario():
 
 def update_avatar(user, avatar):
 
-    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacoes {usuario: "' + user + '"}) SET n.avatar = "' + avatar + '" RETURN n.avatar')
-    reg_comments, summary_comments, keys_comments = consultar_db('MATCH (n:Comentario {usuario: "' + user + '"}) SET n.avatar = "' + avatar + '" RETURN n.avatar')
-    reg_messages, summary_messages, keys_messages = consultar_db('MATCH (n:Mensagem {usuario: "' + user + '"}) SET n.avatar = "' + avatar + '" RETURN n.avatar')
+    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacoes {usuario: "' + user + '"}) SET n.foto = "' + avatar + '" RETURN n.foto')
+    reg_comments, summary_comments, keys_comments = consultar_db('MATCH (n:Comentario {usuario: "' + user + '"}) SET n.foto = "' + avatar + '" RETURN n.foto')
+    reg_messages, summary_messages, keys_messages = consultar_db('MATCH (n:Mensagem {usuario: "' + user + '"}) SET n.foto = "' + avatar + '" RETURN n.foto')
 
     data = [reg_publicacoes, reg_comments,  reg_messages]
 
@@ -223,10 +281,12 @@ def set_avatar_usuario():
     username = usuario['usuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario.files['foto']
     desc = usuario['descricao']
     color = usuario['cor']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.avatar = "' + img + '" RETURN n.avatar')
+
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.foto = "' + img + '" RETURN n.foto')
+    link = upload_image(img)
     update = update_avatar(username, img)
 
     return jsonify({"status": "success", "data": reg}), 200
@@ -238,10 +298,10 @@ def get_avatar_usuario():
     username = usuario['usuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario['foto']
     desc = usuario['descricao']
     color = usuario['cor']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.avatar')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.foto')
    
    
     return jsonify({"status": "success", "data": reg}), 200
@@ -264,7 +324,7 @@ def set_usuario():
     old_usuario = usuario['oldUsuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario['foto']
     desc = usuario['descricao']
     color = usuario['cor']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + old_usuario + '"}) SET n.usuario = "' + username + '" RETURN n.usuario')
@@ -291,7 +351,7 @@ def set_nome():
     nome = usuario['nome']
     old_nome = usuario['oldNome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario['foto']
     desc = usuario['descricao']
     color = usuario['cor']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.nome = "' + nome + '" RETURN n.nome')
@@ -307,7 +367,7 @@ def delete_usuario():
     username = usuario['usuario']
     nome = usuario['nome']
     senha = usuario['senha']
-    img = usuario['avatar']
+    img = usuario['foto']
     desc = usuario['descricao']
     color = usuario['cor']
     reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) DETACH DELETE n)')
@@ -315,10 +375,10 @@ def delete_usuario():
     return jsonify({"status": "success", "data": reg}), 200
 
 
-def create_notificacao(idNotificacao, usuario, conteudo, data, titulo, comunidade):
+def create_notificacao(idNotificacao, usuario, conteudo, data, titulo, comunidade, img):
     reg, summary, keys = consultar_db(
         'MATCH (u:Usuario {usuario: "' + usuario + '"}) '
-        'CREATE (n:Notificacao {id: "'+ idNotificacao +'", usuario: "' + usuario + '", conteudo: "' + conteudo + '", data: "' + data + '", titulo: "'+ titulo +'", comunidade: "'+ comunidade +'"})<-[:TEM_NOTIFICACAO]-(u) '
+        'CREATE (n:Notificacao {id: "'+ idNotificacao +'", usuario: "' + usuario + '", conteudo: "' + conteudo + '", data: "' + data + '", titulo: "'+ titulo +'", comunidade: "'+ comunidade +'", foto: "'+ img +'"})<-[:TEM_NOTIFICACAO]-(u) '
         'RETURN n'
     )
     return reg
@@ -334,6 +394,7 @@ def create_publicacao():
     conteudo = post['conteudo']
     img = post['imagem']
     date = post['data']
+    foto = post['foto']
   
     reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", imagem: "' + img + '", data: "' + date + '"}) RETURN n')
     post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
@@ -346,7 +407,7 @@ def create_publicacao():
     for membro in members_not_repeated:
         if (membro != username):
             title_name = "Nova Publicação em " + comunidade
-            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade)
+            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade, foto)
 
     return post
 
@@ -486,6 +547,7 @@ def create_curtida():
     id_post = post['id']
     date = post['data']
     comunidade = post['comunidade']
+    img = post['foto']
    
     try:
         reg_already_exists, summary_already_exists, keys_already_exists = consultar_db(
@@ -505,7 +567,7 @@ def create_curtida():
             # Extraindo as propriedades de cada nó 'Usuario'
             for membro in members_not_repeated:
                 title_name = "Nova Curtida em " + comunidade
-                create_notificacao(id_post, membro, " ", date, title_name, comunidade)
+                create_notificacao(id_post, membro, " ", date, title_name, comunidade, img)
             return jsonify({"status": "success", "data": "Curtida feita com sucesso!"}), 200
 
     except Exception as e:
@@ -547,8 +609,9 @@ def create_comentario():
     date = post['data']
     id_post = post['idPost']
     comunidade = post['comunidade']
+    img = post['foto']
   
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + usuario + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'", usuario: "'+ usuario +'", nome: "'+ nome +'"}]->(p)')
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + usuario + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[:COMENTOU {id: "' + id_comentario + '", conteudo: "' + conteudo + '", data: "'+ date +'", usuario: "'+ usuario +'", nome: "'+ nome +'", foto: "'+ img + '"}]->(p)')
 
     membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario), (p:Publicacao {id: "'+ id_post +'"}) WHERE m.usuario = p.usuario RETURN m.usuario')
     members = [r['m.usuario'] for r in membros]
@@ -558,7 +621,7 @@ def create_comentario():
     for membro in members_not_repeated:
         if (membro != usuario):
             title_name = "Novo Comentário em " + comunidade
-            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade)
+            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade, img)
    
     return jsonify({"status": "success"}), 200
 
@@ -597,6 +660,7 @@ def create_mensagem():
         conteudo = message['conteudo']
         date = message['data']
         color = message['color']
+        img = message['foto']
 
         # Criar a mensagem no banco de dados
         reg, summary, keys = consultar_db('CREATE (m: Mensagem {id: "' + id_message + '", usuario:"'+ usuario +'", conteudo: "' + conteudo + '", data: "'+ date +'", cor: "'+ color +'"}) RETURN m')
@@ -617,7 +681,7 @@ def create_mensagem():
         for membro in members_not_repeated:
             if (membro != usuario):
                 title_name = "Nova Mensagem em " + comunidade
-                create_notificacao(id_message, membro, conteudo, date, title_name, comunidade)
+                create_notificacao(id_message, membro, conteudo, date, title_name, comunidade, img)
         
         return jsonify({"message": "Mensagem criada e relacionada com sucesso", "data": msg_received}), 200
 

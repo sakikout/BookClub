@@ -26,87 +26,12 @@ function createPosts(data) {
         usuario: data.posts[i].usuario,
         nome: data.posts[i].nome,
         conteudo: data.posts[i].conteudo,
-        imagem: data.posts[i].imagem,
+        foto: data.posts[i].foto,
         comentarios: data.posts[i].comentarios || [],
         curtidas: data.posts[i].curtidas || []
       });
   }
   console.log(posts)
-  return posts;
-}
-
-function createRandomPosts(count = 5) {
-  const posts = [];
-
-  posts.push({
-    id: crypto.randomUUID(),
-    usuario: "johndoe01",
-    nome: "John Doe",
-    conteudo: "Baniram o Twitter :(",
-    data: getDateNow(),
-    comentarios: [
-      {
-      id: crypto.randomUUID(),
-      usuario: "marysue10000",
-      nome: "Mary Sue",
-      conteudo: "Paia né!",
-      data: getDateNow()
-      },
-      {
-        id: crypto.randomUUID(),
-        usuario: "elonmusk24",
-        nome: "Elon Musk",
-        conteudo: "I'm sorry brazilians",
-        data: getDateNow()
-        },
-        {
-          id: crypto.randomUUID(),
-          usuario: "johndoe01",
-          nome: "John Doe",
-          conteudo: "Libera pra nós de novo",
-          data: getDateNow()
-          },
-    ],
-    curtidas: [ 
-      {
-      usuario: "marysue10000"
-      }
-    ]
-  });
-  
-  for (let i = 0; i < count; i++) {
-    posts.push({
-      id: crypto.randomUUID() + i,
-      usuario: crypto.randomUUID(),
-      nome: "user" + (i * 31124),
-      conteudo: "Hello World!",
-      data: getDateNow(),
-      comentarios: [
-        {
-        id: crypto.randomUUID() + i + 12,
-        usuario: "marysue10000",
-        nome: "Mary Sue",
-        conteudo: "Oi!",
-        data: getDateNow()
-        },
-        {
-          id: crypto.randomUUID() + i + 10,
-          usuario: "elonmusk24",
-          nome: "Elon Musk",
-          conteudo: "Kekw",
-          data: getDateNow()
-          }
-      ],
-      curtidas: [ 
-        {
-        usuario: "marysue10000"
-        },
-        { usuario: "elonmusk24" }
-      ]
-    });
-  }
-
-
   return posts;
 }
 
@@ -122,6 +47,7 @@ function Publicacoes({userData}){
   const[formData, setPost] = useState({
     id: crypto.randomUUID(),
     nome: nome.nome,
+    foto: foto.foto,
     usuario: usuario.usuario,
     data: getDateNow(),
     conteudo: '',
@@ -131,6 +57,7 @@ function Publicacoes({userData}){
 
   const[formComment, setComment] = useState({
     id: '',
+    foto: foto.foto,
     usuario: usuario.usuario,
     nome: nome.nome,
     data: getDateNow(),
@@ -165,7 +92,8 @@ const handleInputChangeComment = (event) => {
       data: formData.data,
       conteudo: formData.conteudo,
       comunidade: comunidade.comunidade,
-      imagem: "..."
+      imagem: "...",
+      foto: formData.foto
     }
     
     axios.post( URL_API + 'criarPublicacao', data)
@@ -231,7 +159,8 @@ const handleInputChangeComment = (event) => {
       id: obj.id,
       usuario: usuario.usuario,
       comunidade: comunidade.comunidade,
-      data: getDateNow()
+      data: getDateNow(),
+      foto: foto.foto
     }
 
     console.log("Dados sendo enviados para curtida: "+ data.id + " " + data.usuario);
@@ -265,6 +194,7 @@ const handleInputChangeComment = (event) => {
       usuario: formComment.usuario,
       conteudo: formComment.conteudo,
       data: formComment.data,
+      foto: formComment.foto,
       comunidade: comunidade.comunidade
     }
 
@@ -293,8 +223,8 @@ const handleInputChangeComment = (event) => {
           <div className="post-header"> 
            <div className="profile-pic"><img src={foto.foto} alt="Uploaded" className="profile-pic"/></div> 
              <div className="user-info"> 
-                <div className="full-name">{nome.nome}</div> 
-                <div className="username">@{usuario.usuario}</div>
+                <div className="full-name">{usuario.usuario}</div> 
+                <div className="username">@{nome.nome}</div>
               </div>
         </div>
             <div className="form-row">
@@ -333,8 +263,8 @@ const handleInputChangeComment = (event) => {
                     )}
                 </div>
                    <div className="user-info"> 
-                      <div className="full-name">{obj.nome}</div> 
-                      <div className="username">@{obj.usuario}</div>
+                      <div className="full-name">{obj.usuario}</div> 
+                      <div className="username">@{obj.nome}</div>
                     </div> 
               </div>
               <div className="post-content">

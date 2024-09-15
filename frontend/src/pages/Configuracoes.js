@@ -35,6 +35,7 @@ function Configuracoes({userData}){
   const { setComunidade, comunidade } = useContext(StoreContext);
   const { setNome, nome } = useContext(StoreContext);
   const { setColor, color} = useContext(StoreContext);
+  const { setFoto, foto } = useContext(StoreContext);
 
   const { setToken, token } = useContext(StoreContext);
 
@@ -187,6 +188,7 @@ function Configuracoes({userData}){
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         console.log(response.data.data[0][0])
+        setFoto({foto: response.data.data[0][0]});
         setDeletePopup(false);
      
       })

@@ -10,6 +10,20 @@ import '../App.css';
 
 const URL_API ='http://127.0.0.1:8080/api/' 
 
+function setComunities(data){
+  console.log(data)
+  const communities = [];
+    for (let i = 0; i < data.length; i++) {
+      communities.push({
+        id: data.comunidades[i].id,
+        img: data.comunidades[i].img,
+        nome: data.comunidades[i].nome,
+      });
+  }
+  console.log(communities)
+  return communities;
+}
+
 function Comunidades({navigation}){
     const navigate = useNavigate()
     const { setToken, token } = useContext(StoreContext);
@@ -17,12 +31,12 @@ function Comunidades({navigation}){
     const { setNome, nome } = useContext(StoreContext);
     const {comunidade, setComunidade} = useContext(StoreContext);
 
-   const communities = [{id: 0, name: "Harry Potter", img: "https://m.media-amazon.com/images/I/81q77Q39nEL._SL1500_.jpg"}, 
-                        {id: 1, name: "Game of Thrones", img:'https://m.media-amazon.com/images/I/71r9CosD5QL._SL1500_.jpg'},
-                        {id: 2, name: "Me Before You", img:'https://m.media-amazon.com/images/I/71+YK9HSaJL._AC_UF1000,1000_QL80_.jpg'},
-                        {id: 3, name: "Jogos Vorazes", img:'https://m.media-amazon.com/images/I/61zBhzjS4LL._AC_UF1000,1000_QL80_.jpg'},
-                        {id: 4, name: "Diário de Banana", img:'https://m.media-amazon.com/images/I/71gWCy-KesL._AC_UF1000,1000_QL80_.jpg'},
-                        {id: 5, name: "Bridgerton", img:'https://cdn.kobo.com/book-images/10ab6c9c-0a1d-4899-9dff-f29bab76774c/353/569/90/False/bridgerton-collection-volume-1.jpg'}] 
+   const communities = [{id: "0", name: "Harry Potter", img: "https://m.media-amazon.com/images/I/81q77Q39nEL._SL1500_.jpg"}, 
+                        {id: "1", name: "Game of Thrones", img:'https://m.media-amazon.com/images/I/71r9CosD5QL._SL1500_.jpg'},
+                        {id: "2", name: "Me Before You", img:'https://m.media-amazon.com/images/I/71+YK9HSaJL._AC_UF1000,1000_QL80_.jpg'},
+                        {id: "3", name: "Jogos Vorazes", img:'https://m.media-amazon.com/images/I/61zBhzjS4LL._AC_UF1000,1000_QL80_.jpg'},
+                        {id: "4", name: "Diário de Banana", img:'https://m.media-amazon.com/images/I/71gWCy-KesL._AC_UF1000,1000_QL80_.jpg'},
+                        {id: "5", name: "Bridgerton", img:'https://cdn.kobo.com/book-images/10ab6c9c-0a1d-4899-9dff-f29bab76774c/353/569/90/False/bridgerton-collection-volume-1.jpg'}] 
     
     //const userComunities = [{}]
     const [userComunities, setUserComunities] = useState([]);
@@ -52,17 +66,29 @@ function Comunidades({navigation}){
 
     useEffect(() => {
       // Simulando carregamento de dados a partir da constante
-      getUserComunidades(userComunities);
-    }, []);
 
+      /*
+      const interval = setInterval(() => {
+        getUserComunidades(userComunities);
+      }, 3000); 
+  
+      return () => clearInterval(interval);
+      */
+    }, [comunidade]);
+
+    /*
     const getUserComunidades = (community) => {
-      setComunidade({comunidade: community.name});
-      
-      const data = {
-        usuario: nome.nome,
-      }
-
-      axios.post(URL_API + 'getComunidadesUsuario', data)
+      setComunidade({comunidade: community.nome});
+  
+      axios.get(URL_API + 'getComunidadesUsuario', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        params: {
+          comunidade: comunidade.comunidade,
+          usuario: usuario.usuario
+        }
+      })
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         setUserComunities(response.data.comunidades);
@@ -74,9 +100,33 @@ function Comunidades({navigation}){
   
       
   };
+  */
+
+  const createComunidades = () => {
+    const comunidades_response = [];
+
+    for (let community of communities){
+      axios.post(URL_API + 'criaComunidade', community, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => {
+        console.log('Resposta do servidor:', response.data);
+        comunidades_response.push(response.data.data);
+  
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+    }
+
+    setUserComunities(setComunities(comunidades_response))
+    
+};
 
     return (
-      <div className="principal">
+      <div className="principal" onLoad={createComunidades}>
         <div className="bg"></div>
         <div className="bg bg2"></div>
         <div className="bg bg3"></div>
@@ -84,18 +134,21 @@ function Comunidades({navigation}){
         <div className='content-comunidades'>
           <div className='comunidades'>
             <label className="labelComunidades">Suas Comunidades</label>
+            { userComunities ?
             <div className="communities-list">
                     {userComunities.map((userComunity) => (
                         <div className="community-item" key={userComunity.id} onClick={() => entrouNaComunidade(userComunity)}>
                           <div className="community-card">
                             <div className="community-img">
-                              <img src={userComunity.img} alt={userComunity.name}></img>
+                              <img src={userComunity.img} alt={userComunity.nome}></img>
                             </div>
-                            <span className='community-name'>{userComunity.name}</span>
+                            <span className='community-name'>{userComunity.nome}</span>
                           </div>
                         </div>
                     ))}
+                
             </div>
+            : ''}
           </div>
         
           <div className='comunidades'>

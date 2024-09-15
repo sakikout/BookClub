@@ -64,6 +64,7 @@ function Conversas({userData}){
     const { setUsuario, usuario } = useContext(StoreContext);
     const { setComunidade, comunidade } = useContext(StoreContext);
     const { setColor, color } = useContext(StoreContext);
+    const { setFoto, foto } = useContext(StoreContext);
     const [buttonPopup, setButtonPopup] = useState(false);
     const [buttonDeletePopup, setDeletePopup] = useState(false);
     
@@ -74,6 +75,7 @@ function Conversas({userData}){
             conteudo: '',
             color: color.color,
             data: getDateNow(),
+            foto: foto.foto
     });
     
     const handleInputChange = (event) => {
