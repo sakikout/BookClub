@@ -375,10 +375,10 @@ def delete_usuario():
     return jsonify({"status": "success", "data": reg}), 200
 
 
-def create_notificacao(idNotificacao, usuario, conteudo, data, titulo, comunidade, img):
+def create_notificacao(idNotificacao, usuario, usuario_not, conteudo, data, titulo, comunidade, img):
     reg, summary, keys = consultar_db(
         'MATCH (u:Usuario {usuario: "' + usuario + '"}) '
-        'CREATE (n:Notificacao {id: "'+ idNotificacao +'", usuario: "' + usuario + '", conteudo: "' + conteudo + '", data: "' + data + '", titulo: "'+ titulo +'", comunidade: "'+ comunidade +'", foto: "'+ img +'"})<-[:TEM_NOTIFICACAO]-(u) '
+        'CREATE (n:Notificacao {id: "'+ idNotificacao +'", usuario: "' + usuario_not + '", conteudo: "' + conteudo + '", data: "' + data + '", titulo: "'+ titulo +'", comunidade: "'+ comunidade +'", foto: "'+ img +'"})<-[:TEM_NOTIFICACAO]-(u) '
         'RETURN n'
     )
     return reg
@@ -397,6 +397,7 @@ def create_publicacao():
     foto = post['foto']
   
     reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", imagem: "' + img + '", data: "' + date + '"}) RETURN n')
+    reg_new_post, summary_new_post, keys_new_post = consultar_db('MATCH (n:Publicacao {id: "' + id_post + '"}), (u:Usuario {usuario:"'+ username +'"}) CREATE (u)-[rel:CRIOU]->(n) RETURN rel')
     post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
     
     membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario)-[:ESTA_EM]->(com:Comunidade {nome: "' + comunidade + '"}) RETURN m.usuario')
@@ -407,7 +408,7 @@ def create_publicacao():
     for membro in members_not_repeated:
         if (membro != username):
             title_name = "Nova Publicação em " + comunidade
-            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade, foto)
+            create_notificacao(id_post, membro, username, conteudo, date, title_name, comunidade, foto)
 
     return post
 
@@ -560,14 +561,14 @@ def create_curtida():
             reg, summary, keys = consultar_db(
                 'MATCH (n:Usuario {usuario: "' + usuario_que_curtiu + '"}), (p:Publicacao {id: "' + id_post +'"}) CREATE (n)-[rel:CURTIU]->(p) RETURN rel'
             )
-            membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario), (p:Publicacao {id: "'+ id_post +'"} WHERE m.usuario = p.usuario RETURN m.usuario')
+            membros, summary_members, keys_members = consultar_db('MATCH (m:Usuario), (p:Publicacao {id: "'+ id_post +'"}) WHERE m.usuario = p.usuario RETURN m.usuario')
             members = [r['m.usuario'] for r in membros]
             members_not_repeated = list(set(members))
 
             # Extraindo as propriedades de cada nó 'Usuario'
             for membro in members_not_repeated:
                 title_name = "Nova Curtida em " + comunidade
-                create_notificacao(id_post, membro, " ", date, title_name, comunidade, img)
+                create_notificacao(id_post, membro, usuario_que_curtiu, " ", date, title_name, comunidade, img)
             return jsonify({"status": "success", "data": "Curtida feita com sucesso!"}), 200
 
     except Exception as e:
@@ -621,7 +622,7 @@ def create_comentario():
     for membro in members_not_repeated:
         if (membro != usuario):
             title_name = "Novo Comentário em " + comunidade
-            create_notificacao(id_post, membro, conteudo, date, title_name, comunidade, img)
+            create_notificacao(id_post, membro, usuario, conteudo, date, title_name, comunidade, img)
    
     return jsonify({"status": "success"}), 200
 
@@ -681,7 +682,7 @@ def create_mensagem():
         for membro in members_not_repeated:
             if (membro != usuario):
                 title_name = "Nova Mensagem em " + comunidade
-                create_notificacao(id_message, membro, conteudo, date, title_name, comunidade, img)
+                create_notificacao(id_message, membro, usuario, conteudo, date, title_name, comunidade, img)
         
         return jsonify({"message": "Mensagem criada e relacionada com sucesso", "data": msg_received}), 200
 

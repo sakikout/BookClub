@@ -86,9 +86,9 @@ const handleInputChangeComment = (event) => {
     console.log(formData);
 
     const data = {
-      id: formData.id,
-      nome: formData.nome,
-      usuario: formData.usuario,
+      id: crypto.randomUUID(),
+      nome: formData.usuario,
+      usuario: formData.nome,
       data: formData.data,
       conteudo: formData.conteudo,
       comunidade: comunidade.comunidade,
@@ -157,7 +157,7 @@ const handleInputChangeComment = (event) => {
 
     const data = {
       id: obj.id,
-      usuario: usuario.usuario,
+      usuario: nome.nome,
       comunidade: comunidade.comunidade,
       data: getDateNow(),
       foto: foto.foto
@@ -182,6 +182,7 @@ const handleInputChangeComment = (event) => {
   const commentPost = (post) => {
     console.log("Comentar no post de " + post.nome)
     setActivePost(post)
+    console.log(post)
     setButtonPopup(true);
   };
 
@@ -190,8 +191,8 @@ const handleInputChangeComment = (event) => {
     const data = {
       idPost: activePost.id,
       id: crypto.randomUUID(),
-      nome: formComment.nome,
-      usuario: formComment.usuario,
+      nome: formComment.usuario,
+      usuario: formComment.nome,
       conteudo: formComment.conteudo,
       data: formComment.data,
       foto: formComment.foto,
@@ -263,8 +264,8 @@ const handleInputChangeComment = (event) => {
                     )}
                 </div>
                    <div className="user-info"> 
-                      <div className="full-name">{obj.usuario}</div> 
-                      <div className="username">@{obj.nome}</div>
+                      <div className="full-name">{obj.nome}</div> 
+                      <div className="username">@{obj.usuario}</div>
                     </div> 
               </div>
               <div className="post-content">
@@ -331,8 +332,8 @@ const handleInputChangeComment = (event) => {
                   
                 </div> 
                   <div className="user-info-comment"> 
-                    <div className="full-name">{nome.nome}</div> 
-                    <div className="username">@{usuario.usuario}</div>
+                    <div className="full-name">{usuario.usuario}</div> 
+                    <div className="username">@{nome.nome}</div>
                 </div>
               </div>
               <div className="form-row">

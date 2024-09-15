@@ -66,6 +66,7 @@ function Notificacoes({userData}){
     const { setToken, token } = useContext(StoreContext);
     const [tableData, setTableData] = useState([]);
     const { setUsuario, usuario } = useContext(StoreContext);
+    const { setNome, nome } = useContext(StoreContext);
     const { setComunidade, comunidade } = useContext(StoreContext);
     
     /*
@@ -123,7 +124,7 @@ const handleLoadNotitifications = () => {
       'Content-Type': 'application/json'
     },
     params: {
-      usuario: usuario.usuario
+      usuario: nome.nome
     }
   })
   .then(response => {
