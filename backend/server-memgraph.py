@@ -276,18 +276,12 @@ def update_avatar(user, avatar):
 
 @app.route('/api/setAvatar', methods=['POST'])
 def set_avatar_usuario():
-    usuario = request.json  # Os dados do formulário serão enviados como JSON
-    print("Dados recebidos:", usuario)
-    username = usuario['usuario']
-    nome = usuario['nome']
-    senha = usuario['senha']
-    img = usuario.files['foto']
-    desc = usuario['descricao']
-    color = usuario['cor']
-
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.foto = "' + img + '" RETURN n.foto')
+    print("Dados recebidos:", request.form )
+    username = request.form ['usuario']
+    img = request.files['foto']
     link = upload_image(img)
-    update = update_avatar(username, img)
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) SET n.foto = "' + link + '" RETURN n.foto')
+    update = update_avatar(username, link)
 
     return jsonify({"status": "success", "data": reg}), 200
 
@@ -451,7 +445,7 @@ def get_publicacoes():
                 'usuario': post_node['usuario'],
                 'conteudo': post_node['conteudo'],
                 'imagem': post_node['imagem'],
-                "curtidas": record["curtidas"],
+                "curtidas": post_node["curtidas"],
                 'data': post_node['data'],
                 "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
             }
@@ -477,8 +471,11 @@ def get_publicacoes_usuario():
         usuario = request.args.get('usuario')
         # reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
 
+        
         reg, summary, keys = consultar_db(
-            'MATCH (p:Publicacao {usuario: "'+ usuario +'"}) RETURN p')
+             'MATCH (p:Publicacao {usuario: "'+ usuario +'"}) OPTIONAL MATCH (p)<-[:CURTIU]-(u:Usuario) OPTIONAL MATCH (p)<-[rel:COMENTOU]-(v:Usuario) RETURN p, collect(DISTINCT u.usuario) AS curtidas, collect(DISTINCT rel) AS comentarios'
+            
+            )
 
         # Verificar o que está sendo retornado
         print("Dados recebidos da consulta:", reg)
@@ -493,7 +490,7 @@ def get_publicacoes_usuario():
                 'usuario': post_node['usuario'],
                 'conteudo': post_node['conteudo'],
                 'imagem': post_node['imagem'],
-                "curtidas": record["curtidas"],
+                "curtidas": post_node["curtidas"],
                 'data': post_node['data'],
                 "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
             }

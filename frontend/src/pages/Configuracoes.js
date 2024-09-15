@@ -18,7 +18,7 @@ function createPosts(data) {
         nome: data.posts[i].nome,
         conteudo: data.posts[i].conteudo,
         imagem: data.posts[i].imagem,
-        comentarios: data.posts[i].comentarios || [],
+
         curtidas: data.posts[i].curtidas || []
       });
   }
@@ -36,24 +36,37 @@ function Configuracoes({userData}){
   const { setNome, nome } = useContext(StoreContext);
   const { setColor, color} = useContext(StoreContext);
   const { setFoto, foto } = useContext(StoreContext);
+  const [imageURL, setImageURL] = useState("");
 
   const { setToken, token } = useContext(StoreContext);
 
   const[formData, setFunc] = useState({
-    usuario: usuario.usuario,
-    nome: nome.nome,
+    usuario: nome.nome,
+    nome: usuario.usuario,
     descricao: '',
-    avatar: '',
+    foto: '',
     senha: '',
     cor: color.color
   });
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+ //Mudanças nos campos de criação de usuário
+ const handleInputChange = (event) => {
+  const { name } = event.target;
+  //Para caso de fotos é necessário um tratamento diferente (File)
+  if (name === 'foto') {
+    const file = event.target.files[0];
+    setFunc((prevData) => ({
+      ...prevData,
+      foto: file,
+    }));
+    setImageURL(URL.createObjectURL(file));
+  } else {
+    const { value } = event.target;
     setFunc((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+  }
 };
 
   useEffect(() => {
@@ -116,13 +129,16 @@ function Configuracoes({userData}){
   const handleSubmitUsuario = (event) => {
     event.preventDefault();
     console.log(formData.usuario);
+    console.log(usuario.usuario);
+    console.log(formData.nome);
+    console.log(nome.nome);
 
     const data = {
-      oldUsuario: usuario.usuario,
+      oldUsuario: nome.nome,
       usuario: formData.usuario,
       nome: formData.nome,
       descricao: formData.descricao,
-      avatar: formData.avatar,
+      foto: formData.foto,
       senha: formData.senha,
       cor: formData.cor
     }
@@ -130,7 +146,7 @@ function Configuracoes({userData}){
     axios.post(URL_API + 'setUsuario', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        setUsuario({usuario: response.data.data[0][0]})
+        setNome({nome: response.data.data[0][0]})
         console.log(usuario.usuario)
         setDeletePopup(false);
      
@@ -144,14 +160,19 @@ function Configuracoes({userData}){
 
   const handleSubmitNome = (event) => {
     event.preventDefault();
+
     console.log(formData.usuario);
+    console.log(usuario.usuario);
+    console.log(formData.nome);
+    console.log(nome.nome);
+
 
     const data = {
-      oldNome: nome.nome,
+      oldNome: usuario.usuario,
       usuario: formData.usuario,
       nome: formData.nome,
       descricao: formData.descricao,
-      avatar: formData.avatar,
+      foto: formData.foto,
       senha: formData.senha,
       cor: formData.cor
     }
@@ -159,7 +180,7 @@ function Configuracoes({userData}){
     axios.post(URL_API + 'setNome', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        setNome({nome: response.data.data[0][0]})
+        setUsuario({usuario: response.data.data[0][0]})
         console.log(nome.nome)
         setDeletePopup(false);
      
@@ -175,16 +196,17 @@ function Configuracoes({userData}){
     event.preventDefault();
     console.log(formData.usuario);
 
-    const data = {
-      usuario: formData.usuario,
-      nome: formData.nome,
-      descricao: formData.descricao,
-      avatar: formData.avatar,
-      senha: formData.senha,
-      cor: formData.cor
-    }
+    const data = new FormData();
+    data.append('nome', formData.nome);
+    data.append('usuario', formData.usuario);
+    data.append('senha', formData.senha);
+    data.append('foto', formData.foto);
 
-    axios.post(URL_API + 'setAvatar', data)
+    axios.post(URL_API + 'setAvatar', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         console.log(response.data.data[0][0])
@@ -208,7 +230,7 @@ function Configuracoes({userData}){
       usuario: formData.usuario,
       nome: formData.nome,
       descricao: formData.descricao,
-      avatar: formData.avatar,
+      foto: formData.foto,
       senha: formData.senha,
       cor: formData.cor
     }
@@ -227,14 +249,14 @@ function Configuracoes({userData}){
       
   }
 
-  const handleSubmitDeletePost = (event, obj) => {
-    event.preventDefault();
-    console.log(formData.usuario);
+  const handleSubmitDeletePost = (obj) => {
+   console.log(formData.usuario);
+    console.log(obj.id)
 
     const data = {
       id : obj.id
     }
-
+ 
     axios.post(URL_API + 'deletaPublicacao', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
@@ -245,23 +267,22 @@ function Configuracoes({userData}){
         console.error('Erro ao enviar dados:', error);
       });
 
-      
   }
-  const handleLoadPosts = (event) => {
+  const handleLoadPosts = ( ) => {
 
-    event.preventDefault();
       axios.get(URL_API + 'getPublicacoesUsuario', {
         headers: {
           'Content-Type': 'application/json'
         },
         params: {
-          usuario: usuario.usuario
+          usuario: nome.nome
         }
       })
       .then(response => {
         console.log('Resposta do servidor:', response.data);
+        console.log(response.data.data)
         const newPosts = createPosts(response.data)
-        setTableData([...tableData, ...newPosts])
+        setTableData([...newPosts])
   
       })
       .catch(error => {
@@ -361,10 +382,9 @@ function Configuracoes({userData}){
                 <label className='optionsLabel' for="avatar">
                 </label>
                 <input 
-                      name="avatar"
+                      name="foto"
                       type="file" 
                       className='dadosUsers' 
-                      value={formData.avatar}
                       accept="image/png, image/jpeg"
                       onChange={handleInputChange} required/>
               </div>
@@ -410,7 +430,7 @@ function Configuracoes({userData}){
               <form onSubmit={() => handleSubmitDeletePost(obj)} key={obj.key}>
                 <div className="post-data">{obj.data}</div>
                 <div className="post-content">Conteúdo: {obj.conteudo}</div>
-                <div className="post-likes">Likes: {obj.curtidas}</div>
+                <div className="post-likes">Likes: {obj.curtidas.length}</div>
 
               <button className= "submit-btn-delete" 
                       type = "submit"
