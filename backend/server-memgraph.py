@@ -165,12 +165,20 @@ def create_comunidade():
             else:
                 return jsonify({"error": True, "message": "Erro ao criar conversa da comunidade."}), 500
     else:
-        reg, summary, keys = consultar_db('CREATE (n:Comunidade {id: "' + id_com + '", nome: "' + nome + '", img: "' + img + '"}) RETURN n')
+        reg, summary, keys = consultar_db('CREATE (c:Comunidade {id: "' + id_com + '", nome: "' + nome + '", img: "' + img + '"}) RETURN c.id AS id, c.nome AS nome, c.img AS img;')
         reg_new_con, summary_new_con, keys_new_con = consultar_db('MATCH (c:Comunidade {nome: "' + nome + '"}) CREATE (n:Conversa) CREATE (c)-[rel:TEM_CONVERSA]->(n) RETURN rel AS relacao_existe')
         if (reg_new_con and reg):
-            comunidade_node = reg[0]
-            comunidade_dict = comunidade_node['c']
-            return jsonify({"status": "success", "message": "Comunidade e conversa da comunidade criada.", "data": node_to_dict(comunidade_dict)}), 200
+            com = []
+            for r in reg:
+                com.append({
+                    'id': r['id'],
+                    'name': r['nome'],
+                    'img': r['img']
+                }) 
+            #comunidade_node = reg[0]
+            #print("comunidade", comunidade_node)
+            #comunidade_dict = comunidade_node['c']
+            return jsonify({"status": "success", "message": "Comunidade e conversa da comunidade criada.", "data": com}), 200
         elif (reg and not reg_new_con):
             return jsonify({"error": True, "message": "Erro ao criar conversa da comunidade."}), 500
         
