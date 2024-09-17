@@ -148,7 +148,7 @@ def create_comunidade():
     id_com = request.json['id']
     nome = request.json['name'] 
     
-    reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (c:Comunidade) WHERE c.nome = "' + nome + '" RETURN c')
+    reg_already_exist, summary_already_exist, keys_already_exist = consultar_db('MATCH (c:Comunidade {nome: "'+ nome +'"}) RETURN c')
     print(reg_already_exist)
     if (reg_already_exist):
         reg_con_already_exist, summary_con_already_exist, keys_con_already_exist = consultar_db('MATCH (c:Comunidade {nome: "' + nome + '"})-[rel:TEM_CONVERSA]->(n:Conversa) RETURN rel AS relacao_existe')
