@@ -398,7 +398,7 @@ def create_publicacao():
     date = post['data']
     foto = post['foto']
   
-    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", imagem: "' + img + '", data: "' + date + '"}) RETURN n')
+    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", foto: "' + foto + '", data: "' + date + '"}) RETURN n')
     reg_new_post, summary_new_post, keys_new_post = consultar_db('MATCH (n:Publicacao {id: "' + id_post + '"}), (u:Usuario {usuario:"'+ username +'"}) CREATE (u)-[rel:CRIOU]->(n) RETURN rel')
     post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
     
@@ -446,16 +446,27 @@ def get_publicacoes():
         # Extraindo as propriedades de cada nó 'Publicacao'
         posts = []
         for record in reg:
+            comentarios = []
+            for com in record["comentarios"]:
+                comentario = {
+                    'id': com['id'],
+                    'nome': com['nome'],
+                    'usuario': com['usuario'],
+                    'conteudo': com['conteudo'],
+                    'foto': com['foto']
+                }
+                comentarios.append(comentario)
+
             post_node = record['p']
             propriedades = {
                 'id': post_node['id'],
                 'nome': post_node['nome'],
                 'usuario': post_node['usuario'],
                 'conteudo': post_node['conteudo'],
-                'imagem': post_node['imagem'],
+                'foto': post_node['foto'],
                 "curtidas": record["curtidas"],
                 'data': post_node['data'],
-                "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
+                "comentarios": comentarios
             }
             posts.append(propriedades)
 
@@ -463,7 +474,7 @@ def get_publicacoes():
         # Verificar se as mensagens estão sendo extraídas corretamente
         print("Mensagens extraídas:", posts)
 
-        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'imagem', 'conteudo', 'data', 'curtidas', 'comentarios'])
+        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'foto', 'conteudo', 'data', 'curtidas', 'comentarios'])
         return jsonify({"posts": df_bd1.to_dict(orient="records")}), 200
     
     except Exception as e:

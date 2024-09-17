@@ -98,12 +98,6 @@ function Comunidades({navigation}){
     
 };
 
-const loadComunidades = () => {
-  createComunidades()
-  getUserComunidades()
-  
-};
-
     return (
       <div className="principal" onLoad={createComunidades}>
         <div className="bg"></div>
