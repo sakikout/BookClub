@@ -109,20 +109,42 @@ function Configuracoes({userData}){
       });
   }
 
+  const checkPassword = async (senha) => {
+    try {
+    const response = await axios.post(URL_API + 'getSenhaUsuario', formData);
+    // console.log('Resposta do servidor:', response.data);
+    const senhaServidor = response.data.data[0][0]
+    // console.log("Senha do servidor: " + senhaServidor)
+    // console.log("Senha do formulário: " + formData.senha)
+    return senhaServidor.toString() === formData.senha.toString()
+   
+    } catch (error) {
+      console.error('Erro ao enviar dados:', error);
+      return false;
+    }
+
+  }
+
   const handleSubmitDelete = (event) => {
     event.preventDefault();
     console.log(formData.usuario);
 
-    axios.post(URL_API + 'deletaUsuario', formData)
+    if (checkPassword(formData.usuario)){
+        axios.post(URL_API + 'deletaUsuario', formData)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        setDeletePopup(false);
+        setToken(null);
+        
      
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
-
+    }
+    else {
+      console.error('Senha incorreta.');
+    }
+  
       
   }
 
@@ -441,7 +463,7 @@ function Configuracoes({userData}){
             }
 
             </div>
-            <span className="request-status"></span>
+            <span className="request-status-delete-acc"></span>
             </div>
           </div>
 
@@ -457,6 +479,7 @@ function Configuracoes({userData}){
                   <input 
                       name="senha" 
                       className='dadosUsers' 
+                      type="password"
                       value={formData.senha}
                       onChange={handleInputChange} required />
                   </div>

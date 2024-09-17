@@ -95,7 +95,6 @@ function Comunidades({navigation}){
     //setUserComunities(comunidades_response)
     getUserComunidades()
     
-    
 };
 
     return (

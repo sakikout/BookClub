@@ -244,6 +244,19 @@ def sair_de_comunidade():
     print("Dados retorno:", reg)
     return json.dumps(reg)
 
+@app.route('/api/getSenhaUsuario', methods=['POST'])
+def get_senha_usuario():
+    usuario = request.json  # Os dados do formulário serão enviados como JSON
+    print("Dados recebidos:", usuario)
+    username = usuario['usuario']
+    try:
+        reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.senha')
+
+    except Exception as e:
+        return jsonify({"error": "Erro ao recuperar senha,"}), 400
+   
+    return jsonify({"status": "success", "data": reg}), 200
+
 @app.route('/api/setSenha', methods=['POST'])
 def set_senha_usuario():
     usuario = request.json  # Os dados do formulário serão enviados como JSON
@@ -292,6 +305,11 @@ def set_avatar_usuario():
     update = update_avatar(username, link)
 
     return jsonify({"status": "success", "data": reg}), 200
+
+def get_foto_usuario(username):
+    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) RETURN n.foto')
+    return reg
+
 
 @app.route('/api/getAvatar', methods=['POST'])
 def get_avatar_usuario():
@@ -361,20 +379,53 @@ def set_nome():
    
     return jsonify({"status": "success", "data": reg}), 200
 
+def delete_publicacoes_usuario(username):
+    try:
+        reg, summary, keys = consultar_db('MATCH (n:Publicacao {usuario: "' + username + '"}) DETACH DELETE n')
+    except Exception as e:
+        return jsonify({"error": e, "message": "Algo deu errado ao deletar as publicações do usuário."}), 400
+    return jsonify({"status": "success", "message": "Publicações deletadas com sucesso."}), 200
 
-@app.route('/api/deleteUsuario', methods=['POST'])
+def delete_comentarios_usuario(username):
+    try:
+        reg, summary, keys = consultar_db('MATCH (n:Publicacao)<-[rel:COMENTOU]-(u:Usuario {usuario: "'+ username + '"}) DETACH DELETE rel')
+    except Exception as e:
+        return jsonify({"error": e, "message": "Algo deu errado ao deletar os comentários do usuário."}), 400
+    return jsonify({"status": "success", "message": "Comentários deletados com sucesso."}), 200
+
+def delete_mensagens_usuario(username):
+    try:
+        reg, summary, keys = consultar_db('MATCH (n:Mensagem {usuario: "' + username + '"}) DETACH DELETE n')
+    except Exception as e:
+        return jsonify({"error": e, "message": "Algo deu errado ao deletar as mensagens do usuário."}), 400
+    return jsonify({"status": "success", "message": "Mensagens deletadas com sucesso."}), 200
+
+def delete_curtidas_usuario(username):
+    try:
+        reg, summary, keys = consultar_db('MATCH (n:Usuario {username: "'+ username + '"})-[rel:CURTIU]->(p:Publicacao) DETACH DELETE rel')
+    except Exception as e:
+        return jsonify({"error": e, "message": "Algo deu errado ao deletar as curtidas do usuário."}), 400
+    return jsonify({"status": "success", "message": "Curtidas deletadas com sucesso."}), 200
+
+@app.route('/api/deletaUsuario', methods=['POST'])
 def delete_usuario():
     usuario = request.json  # Os dados do formulário serão enviados como JSON
     print("Dados recebidos:", usuario)
     username = usuario['usuario']
-    nome = usuario['nome']
-    senha = usuario['senha']
-    img = usuario['foto']
-    desc = usuario['descricao']
-    color = usuario['cor']
-    reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) DETACH DELETE n)')
-   
-    return jsonify({"status": "success", "data": reg}), 200
+
+    try:
+        del_publicacoes = delete_publicacoes_usuario(username)
+        del_comentarios = delete_comentarios_usuario(username)
+        del_mensagens =  delete_mensagens_usuario(username)
+        del_curtidas = delete_curtidas_usuario(username)
+
+        reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) DETACH DELETE n')
+
+    except Exception as e:
+        print(f"Erro ao deletar usuário: {e}")
+        return jsonify({"error": "Algo deu errado ao deletar usuário."}), 500 
+      
+    return jsonify({"status": "success", "message": "Usuário foi apagado com sucesso."}), 200
 
 
 def create_notificacao(idNotificacao, usuario, usuario_not, conteudo, data, titulo, comunidade, img):
@@ -394,7 +445,6 @@ def create_publicacao():
     id_post = post['id']
     username = post['usuario']
     conteudo = post['conteudo']
-    img = post['imagem']
     date = post['data']
     foto = post['foto']
   
@@ -768,7 +818,9 @@ def get_notificacoes():
                 'usuario': notificacoes_node['usuario'],
                 'conteudo': notificacoes_node['conteudo'],
                 'titulo': notificacoes_node['titulo'],
-                'data': notificacoes_node['data']
+                'data': notificacoes_node['data'],
+                'foto': notificacoes_node['foto'],
+                'nome': notificacoes_node['nome']
             }
             notificacoes.append(propriedades)
 
@@ -776,7 +828,7 @@ def get_notificacoes():
         # Verificar se as mensagens estão sendo extraídas corretamente
         print("Notificações extraídas:", notificacoes)
 
-        df_bd1 = pd.DataFrame(notificacoes, columns=['id', 'usuario', 'conteudo', 'data', 'titulo'])
+        df_bd1 = pd.DataFrame(notificacoes, columns=['id', 'usuario', 'conteudo', 'data', 'titulo', 'nome', 'foto'])
         return jsonify({"notificacoes": df_bd1.to_dict(orient="records")}), 200
     
     except Exception as e:

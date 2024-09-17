@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import {withRouter} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // import $ from 'jquery';
 import '../components/style/style.css';
-import logo from "../img/logo.png"
-import Popup from '../components/popuplogin';
 import StoreContext from '../components/Store/Context';
 
 const URL_API ='http://127.0.0.1:8080/api/' 
-
-function getDateNow(){
-  var d = new Date();
-  return d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-}
 
 function createNotificacoes(data) {
   const notifications = [];
@@ -24,38 +16,11 @@ function createNotificacoes(data) {
         nome: data.notificacoes[i].nome,
         conteudo: data.notificacoes[i].conteudo,
         titulo: data.notificacoes[i].titulo,
-        data: data.notificacoes[i].data
+        data: data.notificacoes[i].data,
+        foto: data.notificacoes[i].foto,
       });
   }
   console.log(notifications)
-  return notifications;
-}
-
-function createRandomNotifications(count = 5) {
-  const notifications = [];
-  var d = new Date();
-  
-  for (let i = 0; i < count; i++) {
-    notifications.push({
-      id: crypto.randomUUID(),
-      usuario: crypto.randomUUID(),
-      nome: "John Doe",
-      titulo: "Nova Mensagem",
-      conteudo: "TÁ PAGANDO MUITO",
-      data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-    });
-  }
-
-  notifications.push({
-    id: crypto.randomUUID(),
-    usuario: crypto.randomUUID(),
-    nome: "Elon Musk",
-    tipo: "comment",
-    titulo: "Novo Comentário",
-    conteudo: "Kekw",
-    data: d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
-  });
-
   return notifications;
 }
 
@@ -100,12 +65,6 @@ function Notificacoes({userData}){
     setTableData([]);
   }
 
-const handleCreateNotifications = () => {
-  if (tableData.length < 1){
-    const newUsers = createRandomNotifications()
-    setTableData([...tableData, ...newUsers])
-  }
-}
 
 useEffect(() => {
   handleLoadNotitifications();
@@ -130,7 +89,7 @@ const handleLoadNotitifications = () => {
   .then(response => {
     console.log('Resposta do servidor:', response.data);
     const newNotifications = createNotificacoes(response.data)
-    setTableData([...tableData, ...newNotifications])
+    setTableData([...newNotifications])
 
   })
   .catch(error => {
@@ -148,7 +107,11 @@ const handleLoadNotitifications = () => {
             return (
               <div className="notification" key={obj.id}>
                 <div className="notifications-left">
-                <div className="profile-pic"></div>
+                {obj.foto ? 
+                    (<img src={obj.foto} alt="Uploaded" className="profile-pic"/>) 
+                    :(
+                      <div className="profile-pic"></div>
+                    )}
                 <div className="notification-main">
                     <div className="notification-title"> {obj.titulo}</div>
                     <div className="full-name">{obj.usuario}</div> 
