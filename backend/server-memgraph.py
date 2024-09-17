@@ -165,12 +165,20 @@ def create_comunidade():
             else:
                 return jsonify({"error": True, "message": "Erro ao criar conversa da comunidade."}), 500
     else:
-        reg, summary, keys = consultar_db('CREATE (n:Comunidade {id: "' + id_com + '", nome: "' + nome + '", img: "' + img + '"}) RETURN n')
+        reg, summary, keys = consultar_db('CREATE (c:Comunidade {id: "' + id_com + '", nome: "' + nome + '", img: "' + img + '"}) RETURN c.id AS id, c.nome AS nome, c.img AS img;')
         reg_new_con, summary_new_con, keys_new_con = consultar_db('MATCH (c:Comunidade {nome: "' + nome + '"}) CREATE (n:Conversa) CREATE (c)-[rel:TEM_CONVERSA]->(n) RETURN rel AS relacao_existe')
         if (reg_new_con and reg):
-            comunidade_node = reg[0]
-            comunidade_dict = comunidade_node['c']
-            return jsonify({"status": "success", "message": "Comunidade e conversa da comunidade criada.", "data": node_to_dict(comunidade_dict)}), 200
+            com = []
+            for r in reg:
+                com.append({
+                    'id': r['id'],
+                    'name': r['nome'],
+                    'img': r['img']
+                }) 
+            #comunidade_node = reg[0]
+            #print("comunidade", comunidade_node)
+            #comunidade_dict = comunidade_node['c']
+            return jsonify({"status": "success", "message": "Comunidade e conversa da comunidade criada.", "data": com}), 200
         elif (reg and not reg_new_con):
             return jsonify({"error": True, "message": "Erro ao criar conversa da comunidade."}), 500
         
@@ -390,7 +398,7 @@ def create_publicacao():
     date = post['data']
     foto = post['foto']
   
-    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", imagem: "' + img + '", data: "' + date + '"}) RETURN n')
+    reg, summary, keys = consultar_db('CREATE (n:Publicacao {id: "' + id_post + '", usuario: "' + username + '", nome: "' + nome + '", conteudo: "' + conteudo + '", foto: "' + foto + '", data: "' + date + '"}) RETURN n')
     reg_new_post, summary_new_post, keys_new_post = consultar_db('MATCH (n:Publicacao {id: "' + id_post + '"}), (u:Usuario {usuario:"'+ username +'"}) CREATE (u)-[rel:CRIOU]->(n) RETURN rel')
     post, summary_post, keys_post = consultar_db('MATCH (p:Publicacao {id: "' + id_post +'"}), (c:Comunidade {nome:"' + comunidade + '"}) CREATE (p)-[:PERTENCE_A]->(c)')
     
@@ -438,16 +446,27 @@ def get_publicacoes():
         # Extraindo as propriedades de cada nó 'Publicacao'
         posts = []
         for record in reg:
+            comentarios = []
+            for com in record["comentarios"]:
+                comentario = {
+                    'id': com['id'],
+                    'nome': com['nome'],
+                    'usuario': com['usuario'],
+                    'conteudo': com['conteudo'],
+                    'foto': com['foto']
+                }
+                comentarios.append(comentario)
+
             post_node = record['p']
             propriedades = {
                 'id': post_node['id'],
                 'nome': post_node['nome'],
                 'usuario': post_node['usuario'],
                 'conteudo': post_node['conteudo'],
-                'imagem': post_node['imagem'],
+                'foto': post_node['foto'],
                 "curtidas": record["curtidas"],
                 'data': post_node['data'],
-                "comentarios": [comentario_to_dict(c) for c in record["comentarios"]]
+                "comentarios": comentarios
             }
             posts.append(propriedades)
 
@@ -455,7 +474,7 @@ def get_publicacoes():
         # Verificar se as mensagens estão sendo extraídas corretamente
         print("Mensagens extraídas:", posts)
 
-        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'imagem', 'conteudo', 'data', 'curtidas', 'comentarios'])
+        df_bd1 = pd.DataFrame(posts, columns=['id', 'usuario', 'nome', 'foto', 'conteudo', 'data', 'curtidas', 'comentarios'])
         return jsonify({"posts": df_bd1.to_dict(orient="records")}), 200
     
     except Exception as e:

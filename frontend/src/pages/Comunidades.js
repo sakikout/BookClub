@@ -10,20 +10,6 @@ import '../App.css';
 
 const URL_API ='http://127.0.0.1:8080/api/' 
 
-function setComunities(data){
-  console.log(data)
-  const communities = [];
-    for (let i = 0; i < data.length; i++) {
-      communities.push({
-        id: data.comunidades[i].id,
-        img: data.comunidades[i].img,
-        nome: data.comunidades[i].nome,
-      });
-  }
-  console.log(communities)
-  return communities;
-}
-
 function Comunidades({navigation}){
     const navigate = useNavigate()
     const { setToken, token } = useContext(StoreContext);
@@ -63,22 +49,8 @@ function Comunidades({navigation}){
     
         navigate("home",  { replace: false });
     };
-
-    useEffect(() => {
-      // Simulando carregamento de dados a partir da constante
-
-      /*
-      const interval = setInterval(() => {
-        getUserComunidades(userComunities);
-      }, 3000); 
-  
-      return () => clearInterval(interval);
-      */
-    }, [comunidade]);
-
-    /*
-    const getUserComunidades = (community) => {
-      setComunidade({comunidade: community.nome});
+    
+    const getUserComunidades = () => {
   
       axios.get(URL_API + 'getComunidadesUsuario', {
         headers: {
@@ -86,7 +58,7 @@ function Comunidades({navigation}){
         },
         params: {
           comunidade: comunidade.comunidade,
-          usuario: usuario.usuario
+          usuario: nome.nome
         }
       })
       .then(response => {
@@ -100,7 +72,6 @@ function Comunidades({navigation}){
   
       
   };
-  */
 
   const createComunidades = () => {
     const comunidades_response = [];
@@ -121,7 +92,9 @@ function Comunidades({navigation}){
       });
     }
 
-    setUserComunities(setComunities(comunidades_response))
+    //setUserComunities(comunidades_response)
+    getUserComunidades()
+    
     
 };
 
@@ -148,7 +121,10 @@ function Comunidades({navigation}){
                     ))}
                 
             </div>
-            : ''}
+            : 
+            <div className="communities-list">
+              <label className="labelComunidades">Não há comunidades</label>
+              </div>}
           </div>
         
           <div className='comunidades'>
