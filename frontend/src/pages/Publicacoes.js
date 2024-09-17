@@ -92,7 +92,6 @@ const handleInputChangeComment = (event) => {
       data: formData.data,
       conteudo: formData.conteudo,
       comunidade: comunidade.comunidade,
-      imagem: "...",
       foto: formData.foto
     }
     
@@ -132,8 +131,9 @@ const handleInputChangeComment = (event) => {
     })
     .then(response => {
       console.log('Resposta do servidor:', response.data);
+      console.log(response.data)
       const newPosts = createPosts(response.data)
-      setTableData([...tableData, ...newPosts])
+      setTableData([...newPosts])
 
     })
     .catch(error => {

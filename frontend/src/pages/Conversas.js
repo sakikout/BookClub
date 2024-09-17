@@ -28,7 +28,7 @@ function createMessages(data) {
         usuario: data.mensagens[i].usuario,
         nome: data.mensagens[i].nome,
         conteudo: data.mensagens[i].conteudo,
-        color: data.mensagens[i].color
+        cor: data.mensagens[i].cor
       });
   }
 
@@ -163,9 +163,9 @@ const renderMessages = () => {
   for (let i = 0; i < tableData.length; i++) {
     let element;
     if (tableData[i].usuario === nome.nome) {
-      element = createMessageSelfElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
+      element = createMessageSelfElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].cor);
     } else {
-      element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].color);
+      element = createMessageOtherElement(tableData[i].conteudo, tableData[i].usuario, tableData[i].cor);
     }
     chatMessages.appendChild(element);
   }
@@ -191,29 +191,6 @@ const renderMessages = () => {
     div.innerHTML += content;
     return div;
   }
-
-  /*  Formato de Mensagens no Chat
-  
-  <div className='messageSelf'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin enim et risus pharetra, in mattis tellus efficitur. Sed egestas enim viverra ante tincidunt eleifend. Etiam dui diam, imperdiet eu hendrerit a, facilisis nec arcu. Duis laoreet nulla et eleifend suscipit. Aenean pellentesque ornare volutpat. Curabitur quis faucibus velit, a lobortis tellus. Aliquam sit amet libero sed enim bibendum interdum.
-Maecenas non est varius, lacinia massa sed, congue turpis. Sed bibendum magna imperdiet commodo volutpat. Donec elementum diam tellus, vel hendrerit quam pretium vitae. Etiam aliquam justo sit amet pharetra maximus. Donec non odio nec purus aliquam malesuada. Ut finibus nulla tortor, et venenatis felis faucibus sed. </div> 
-  <div className='messageOther'>
-                <span className='messageUser'>{obj.usuario}</span>
-                {obj.content}
-              </div>
-
- {
-  tableData.map((obj) => {
-    return (
-      <div className='messageOther'>
-        <span className='messageUser'>{obj.usuario}</span>
-        {obj.conteudo}
-      </div>
-    );
-  })
-  }
-*/
-
-
 
     return (
       <div className = "mform">
