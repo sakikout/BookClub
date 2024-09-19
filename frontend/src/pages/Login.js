@@ -77,9 +77,9 @@ function Formulario({navigation}){
   // Função para limpar o formulário
   const clearForm = () => {
     setFormSignIn({
-      nome: 'John Doe',
-      usuario: 'John2001', 
-      senha: '123', 
+      nome: 'Nome Completo...',
+      usuario: 'Usuário...', 
+      senha: '1234', 
       foto: ''
     });
     setImageURL(null);

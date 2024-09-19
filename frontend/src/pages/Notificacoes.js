@@ -33,33 +33,6 @@ function Notificacoes({userData}){
     const { setUsuario, usuario } = useContext(StoreContext);
     const { setNome, nome } = useContext(StoreContext);
     const { setComunidade, comunidade } = useContext(StoreContext);
-    
-    /*
-
-    function createVenda(input){
-      var jqXHR = $.ajax({
-          type: "POST",
-          url: "/api/createVenda",
-          async: false,
-          data: { data: input}
-      });
-  
-      return jqXHR.responseText;
-      // return jqXHR;
-  }
-
-  function returnVendas(input){
-    var data = $.ajax({
-        type: "POST",
-        url: "/api/returnVendas",
-        async: false,
-        data: { data: input}
-    });
-
-    sendVendas(data);
-  }
-  */
-
 
   const handleClearNotifications = () => {
     setTableData([]);

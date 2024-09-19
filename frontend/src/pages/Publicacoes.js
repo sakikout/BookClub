@@ -55,6 +55,26 @@ function Publicacoes({userData}){
     curtidas: []
   });
 
+  // Função para limpar o formulário
+  const clearComment = () => {
+    setComment({
+      id: '',
+      foto: foto.foto,
+      usuario: usuario.usuario,
+      nome: nome.nome,
+      data: getDateNow(),
+      conteudo: '',
+    });
+    
+  };
+
+  const clearPost = () => {
+    setPost({
+      conteudo: ''
+    });
+    
+  };
+
   const[formComment, setComment] = useState({
     id: '',
     foto: foto.foto,
@@ -99,6 +119,7 @@ const handleInputChangeComment = (event) => {
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         window.alert("Post feito com sucesso!");
+        clearPost()
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -205,7 +226,10 @@ const handleInputChangeComment = (event) => {
     axios.post(URL_API + 'criarComentario', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
-        window.alert("Entrada no caixa feita com sucesso!");
+        setButtonPopup(false);
+        //window.alert("Usuário Criado!");
+        clearComment();
+        //window.alert("Entrada no caixa feita com sucesso!");
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);

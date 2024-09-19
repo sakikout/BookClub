@@ -83,6 +83,8 @@
     color: #373a3b;
     font-size: 12px;
     padding: 10px;
+    align-self: center;
+    padding-left: 28px;
   }
 
   .options-rest {

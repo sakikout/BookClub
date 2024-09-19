@@ -332,166 +332,153 @@ function Configuracoes({userData}){
           <div className = "text-title">Configurações</div>
           <div className="options-settings">
             <div className="options-profile">
+
+              
               <div className="options-item-settings" onClick={() => showOptions("change-user")}>Alterar Usuário</div>
+                <div className="change-user">
+                  <div className="container-options">
+                    <div className="text">Alterar Usuário</div>
+                    <form onSubmit={handleSubmitUsuario}>
+                      <div className="form-row-options">
+                        <div className = "input-options">
+                          <label className='optionsLabel' for="usuario">
+                          Novo Usuário:
+                          </label>
+                          <input 
+                                name="usuario" 
+                                className='dadosUsers' 
+                                value={formData.usuario}
+                                onChange={handleInputChange} required />
+                          </div>
+                        </div>
+                      <button className= "submit-btn" type = "submit" >Atualizar</button>
+                    </form> 
+                    <span className="request-status"></span>
+                  </div>
+                </div>
+
+
               <div className="options-item-settings" onClick={() => showOptions("change-name")}>Alterar Nome</div>
+                <div className="change-name">
+                  <div className="container-options">
+                    <div className="text">Alterar Nome</div>
+                    <form onSubmit={handleSubmitNome}>
+                      <div className="form-row-options">
+                        <div className="input-options">
+                          <label className='optionsLabel' for="nome"> Novo Nome: </label>
+                          <input 
+                                name="nome" 
+                                className='dadosUsers' 
+                                value={formData.nome}
+                                onChange={handleInputChange} required/>
+                        </div>
+                      </div>
+                      <button className= "submit-btn" type = "submit" >Atualizar</button>
+                    </form>
+                    <span className="request-status"></span>
+                  </div>
+                </div>
+
+
               <div className="options-item-settings" onClick={() => showOptions("change-image")}>Alterar Imagem de Perfil</div>
+                <div className="change-image">
+                  <div className="container-options">
+                    <div className="text">Alterar Imagem de Perfil</div>
+                    <form onSubmit={handleSubmitAvatar}>
+                      <div className="form-row-options">
+                        <div className="input-options-image">
+                          <label className='optionsLabel' for="avatar"></label>
+                          <input 
+                                name="foto"
+                                type="file" 
+                                className='dadosUsers' 
+                                accept="image/png, image/jpeg"
+                                onChange={handleInputChange} required/>
+                        </div>
+                      </div>
+                      <button className= "submit-btn" type = "submit" >Atualizar</button>
+                    </form>
+                    <span className="request-status"></span>
+                  </div>
+                </div>
+
             </div>
 
             <div className="options-password">
-            <div className="options-item-settings" onClick={() => showOptions("change-password")}>Alterar Senha</div>
+              <div className="options-item-settings" onClick={() => showOptions("change-password")}>Alterar Senha</div>
+                <div className="change-password">
+                  <div className="container-options">
+                    <div className="text">Alterar Senha</div>
+                    <form onSubmit={handleSubmitSenha}>
+                      <div className="form-row-options">
+                        <div className = "input-options">
+                          <label className='optionsLabel' for="senha"> Nova Senha: </label>
+                          <input 
+                              name="senha" 
+                              className='dadosUsers' 
+                              value={formData.senha}
+                              onChange={handleInputChange} required />
+                        </div>
+                      </div>
+                      <button className= "submit-btn" type = "submit" >Atualizar</button>
+                    </form>
+                    <span className="request-status"></span>
+                  </div>
+                </div>
             </div>
+
+
             <div className="options-delete">
-            <div className="options-item-settings" onClick={() => showOptions("delete-post")}>Deletar Publicação</div>
+
+              <div className="options-item-settings" onClick={() => showOptions("delete-post")}>Deletar Publicação</div>
+                <div className="delete-post" onLoad={handleLoadPosts}>
+                  <div className="container-options">
+                    <div className="text">Deletar Publicação</div>
+                    <div className="post">
+                      { tableData.map( (obj) => {
+                        return (
+                          <form onSubmit={() => handleSubmitDeletePost(obj)} key={obj.key}>
+                            <div className="post-data">{obj.data}</div>
+                            <div className="post-content">Conteúdo: {obj.conteudo}</div>
+                            <div className="post-likes">Likes: {obj.curtidas.length}</div>
+                          
+                            <button className= "submit-btn-delete"  type = "submit" >Deletar</button>
+                          </form>
+                          )})
+                      }
+                    </div>
+                    <span className="request-status-delete-acc"></span>
+                  </div>
+                </div>
+
+
               <div className="options-item-settings" onClick={() => showOptions("change-account")}>Deletar Conta</div>
-            </div>
-          </div>
-          </div>
-
-          <div className="change-user">
-            <div className="container-options">
-            <div className="text">Alterar Usuário</div>
-          <form onSubmit={handleSubmitUsuario}>
-            <div className="form-row-options">
-              <div className = "input-options">
-                <label className='optionsLabel' for="usuario">
-                Novo Usuário:
-                </label>
-                <input 
-                      name="usuario" 
-                      className='dadosUsers' 
-                      value={formData.usuario}
-                      onChange={handleInputChange} required />
-              </div>
-              </div>
-              <button className= "submit-btn" 
-              type = "submit"
-             >Atualizar</button>
-              </form> 
-              <span className="request-status"></span>
-              </div>
-          </div>
-
-          <div className="change-name">
-            <div className="container-options">
-            <div className="text">Alterar Nome</div>
-            <form onSubmit={handleSubmitNome}>
-            <div className="form-row-options">
-            <div className="input-options">
-                <label className='optionsLabel' for="nome">
-                  Novo Nome:
-                </label>
-                <input 
-                      name="nome" 
-                      className='dadosUsers' 
-                      value={formData.nome}
-                      onChange={handleInputChange} required/>
-              </div>
-              </div>
-              <button className= "submit-btn" 
-              type = "submit"
-             >Atualizar</button>
-            </form>
-            <span className="request-status"></span>
-            </div>
-          </div>
-
-          <div className="change-image">
-            <div className="container-options">
-            <div className="text">Alterar Imagem de Perfil</div>
-            <form onSubmit={handleSubmitAvatar}>
-            <div className="form-row-options">
-            <div className="input-options-image">
-                <label className='optionsLabel' for="avatar">
-                </label>
-                <input 
-                      name="foto"
-                      type="file" 
-                      className='dadosUsers' 
-                      accept="image/png, image/jpeg"
-                      onChange={handleInputChange} required/>
-              </div>
-              </div>
-              <button className= "submit-btn" 
-              type = "submit"
-             >Atualizar</button>
-            </form>
-            <span className="request-status"></span>
-            </div>
-          </div>
-
-          <div className="change-password">
-            <div className="container-options">
-            <div className="text">Alterar Senha</div>
-            <form onSubmit={handleSubmitSenha}>
-            <div className="form-row-options">
-                <div className = "input-options">
-                  <label className='optionsLabel' for="senha">
-                    Nova Senha:
-                  </label>
-                  <input 
-                      name="senha" 
-                      className='dadosUsers' 
-                      value={formData.senha}
-                      onChange={handleInputChange} required />
+                <div className="change-account">
+                  <div className="container-options">
+                    <div className="text">Deletar Conta</div>
+                    <form onSubmit={handleSubmitDelete}>
+                      <div className="form-row-options">
+                        <div className = "input-options">
+                          <label className='optionsLabel' for="senha"> Insira sua senha: </label>
+                          <input 
+                              name="senha" 
+                              className='dadosUsers' 
+                              type="password"
+                              value={formData.senha}
+                              onChange={handleInputChange} required />
+                        </div>
+                      </div>
+                      <button className= "submit-btn" type = "submit" >Deletar</button>
+                    </form>
+                    <span className="request-status"></span>
                   </div>
                 </div>
-              <button className= "submit-btn" 
-              type = "submit"
-             >Atualizar</button>
-            </form>
-            <span className="request-status"></span>
-            </div>
-          </div>
 
-          <div className="delete-post" onLoad={handleLoadPosts}>
-            <div className="container-options">
-            <div className="text">Deletar Publicação</div>
-            <div className="post">
-            { tableData.map( (obj) => {
-              return (
-              <form onSubmit={() => handleSubmitDeletePost(obj)} key={obj.key}>
-                <div className="post-data">{obj.data}</div>
-                <div className="post-content">Conteúdo: {obj.conteudo}</div>
-                <div className="post-likes">Likes: {obj.curtidas.length}</div>
 
-              <button className= "submit-btn-delete" 
-                      type = "submit"
-              >Deletar</button>
-              </form>
-              
-            )})
-            }
-
-            </div>
-            <span className="request-status-delete-acc"></span>
-            </div>
-          </div>
-
-          <div className="change-account">
-            <div className="container-options">
-            <div className="text">Deletar Conta</div>
-            <form onSubmit={handleSubmitDelete}>
-            <div className="form-row-options">
-                <div className = "input-options">
-                  <label className='optionsLabel' for="senha">
-                    Insira sua senha:
-                  </label>
-                  <input 
-                      name="senha" 
-                      className='dadosUsers' 
-                      type="password"
-                      value={formData.senha}
-                      onChange={handleInputChange} required />
-                  </div>
-                </div>
-              <button className= "submit-btn" 
-              type = "submit"
-             >Deletar</button>
-            </form>
-            <span className="request-status"></span>
             </div>
           </div>
         </div>
+      </div>
 
 
   );

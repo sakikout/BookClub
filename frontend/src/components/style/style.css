@@ -714,6 +714,10 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  background-color: #e4e4e43f;
+  margin: 4px;
+  padding-top: 10px;
+  border-radius: 7px;
 }
 
 .notification-main {
@@ -746,6 +750,10 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  background-color: #ebe8e8;
+  border-radius: 10px;
+  margin-top: 10px;
+  padding: 5px;
 }
 
 .post form {
@@ -814,13 +822,14 @@ textarea {
   height: 1.5dvh;
   border-radius: 5px;
   cursor: pointer;
-  padding: 0.75rem 0;
-  margin-top: 2rem;
+  padding: 0.75rem;
+  margin-top: 3rem;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   background-color: #f0c85c;
   color: #ffffff;
   font-size: 0.8rem;
+  text-align: center;
 }
 
 .container-options form .submit-btn:hover {

@@ -18,7 +18,7 @@
   src: url(./fonts/montserrat/Montserrat-Light.otf)
 }
 
-.form select, .form input{
+.form select, .form input, .dadosUsers{
   font-size: calc(4px + 2vmin);
   font-style: italic;
   background-color: #f2f2f32d;
@@ -32,6 +32,8 @@
   font-family: Monserrat;
   width: calc(300px + 2vmin);
 }
+
+
 
 
 label {
