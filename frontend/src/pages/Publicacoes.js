@@ -26,6 +26,7 @@ function createPosts(data) {
         usuario: data.posts[i].usuario,
         nome: data.posts[i].nome,
         conteudo: data.posts[i].conteudo,
+        data: data.posts[i].data,
         foto: data.posts[i].foto,
         comentarios: data.posts[i].comentarios || [],
         curtidas: data.posts[i].curtidas || []
@@ -132,7 +133,7 @@ const handleInputChangeComment = (event) => {
 
     const interval = setInterval(() => {
       handleLoadPosts();
-    }, 5000); 
+    }, 2000); 
 
     return () => clearInterval(interval);
   }, [comunidade]);
@@ -279,7 +280,7 @@ const handleInputChangeComment = (event) => {
               <div className='postagem' key={obj.id}>
               <div className={'post-top-' + obj.id}>
               <div className="post-header"> 
-
+                
                 <div>
                   {obj.foto ? 
                     (<img src={obj.foto} alt="Uploaded" className="profile-pic"/>) 
@@ -290,8 +291,10 @@ const handleInputChangeComment = (event) => {
                    <div className="user-info"> 
                       <div className="full-name">{obj.nome}</div> 
                       <div className="username">@{obj.usuario}</div>
-                    </div> 
+                    </div>
+                     
               </div>
+              
               <div className="post-content">
                 <div className="user-content">
                  {obj.conteudo}
@@ -299,7 +302,9 @@ const handleInputChangeComment = (event) => {
                 <div className="post-image">
       
                 </div>
+                
               </div>
+              <span className="date-post">{obj.data}</span>
               <div className="post-bottom">
                 <div className="action">
                   <img src={greenHeart} className= {'icons-heart' + obj.id} alt="Coração"

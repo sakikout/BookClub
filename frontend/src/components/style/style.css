@@ -538,6 +538,15 @@ h1 {
   gap: 1rem;
 }
 
+.date-post {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  font-size: small;
+  color: grey;
+  font-weight: 200;
+}
+
 .profile-pic {
   width: 3.5rem;
   height: 3.5rem;
@@ -628,6 +637,7 @@ h1 {
   box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
+  margin: 10px;
 }
 
 textarea {

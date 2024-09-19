@@ -386,6 +386,14 @@ def delete_publicacoes_usuario(username):
         return jsonify({"error": e, "message": "Algo deu errado ao deletar as publicações do usuário."}), 400
     return jsonify({"status": "success", "message": "Publicações deletadas com sucesso."}), 200
 
+def delete_notificacoes_usuario(username):
+    try:
+        reg, summary, keys = consultar_db('MATCH (u:Usuario {usuario: "' + username + '"})-[rel:TEM_NOTIFICACAO]->(n:Notificacao) DETACH DELETE n')
+    except Exception as e:
+        return jsonify({"error": e, "message": "Algo deu errado ao deletar as notificações do usuário."}), 400
+    return jsonify({"status": "success", "message": "Notificações deletadas com sucesso."}), 200
+
+
 def delete_comentarios_usuario(username):
     try:
         reg, summary, keys = consultar_db('MATCH (n:Publicacao)<-[rel:COMENTOU]-(u:Usuario {usuario: "'+ username + '"}) DETACH DELETE rel')
@@ -418,6 +426,7 @@ def delete_usuario():
         del_comentarios = delete_comentarios_usuario(username)
         del_mensagens =  delete_mensagens_usuario(username)
         del_curtidas = delete_curtidas_usuario(username)
+        del_notificacoes = delete_notificacoes_usuario(username)
 
         reg, summary, keys = consultar_db('MATCH (n:Usuario {usuario: "' + username + '"}) DETACH DELETE n')
 

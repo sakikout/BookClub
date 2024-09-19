@@ -87,8 +87,8 @@ const handleLoadNotitifications = () => {
                     )}
                 <div className="notification-main">
                     <div className="notification-title"> {obj.titulo}</div>
-                    <div className="full-name">{obj.usuario}</div> 
-                    <div className="notification-content"> {obj.conteudo}</div>
+                    <div className="full-name">@{obj.usuario}</div> 
+                    <div className="notification-content">{obj.conteudo}</div>
                 </div>
                 </div>
                   <div className="notifications-right">
