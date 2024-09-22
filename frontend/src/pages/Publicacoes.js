@@ -71,9 +71,17 @@ function Publicacoes({userData}){
 
   const clearPost = () => {
     setPost({
-      conteudo: ''
+      id: crypto.randomUUID(),
+      nome: nome.nome,
+      foto: foto.foto,
+      usuario: usuario.usuario,
+      data: getDateNow(),
+      conteudo: '',
+      comentarios: [],
+      curtidas: []
     });
-    
+
+
   };
 
   const[formComment, setComment] = useState({
@@ -115,12 +123,15 @@ const handleInputChangeComment = (event) => {
       comunidade: comunidade.comunidade,
       foto: formData.foto
     }
+
+    console.log(data);
     
     axios.post( URL_API + 'criarPublicacao', data)
       .then(response => {
         console.log('Resposta do servidor:', response.data);
         window.alert("Post feito com sucesso!");
-        clearPost()
+        clearPost();
+   
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
