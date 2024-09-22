@@ -104,7 +104,7 @@ function Formulario({navigation}){
           setColor({color: getRandomColor()})
         }
            
-        navigate("comunidades",  { replace: false });
+        navigate("/comunidades");
       } else {
         window.alert("Erro ao fazer login! Verifique seu usuário e senha e tente novamente.");
       }

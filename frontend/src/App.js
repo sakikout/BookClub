@@ -4,6 +4,7 @@ import Conversas from './pages/Conversas.js';
 import Notificacoes from './pages/Notificacoes.js';
 import Configuracoes from './pages/Configuracoes.js'
 import Publicacoes from './pages/Publicacoes.js'
+import Sobre from './pages/Sobre.js'
 import Home from './pages/Home.js'
 import { BrowserRouter as Router, Route, Routes, BrowserRouter } from 'react-router-dom';
 import StoreContext from './components/Store/Context.jsx';
@@ -16,8 +17,9 @@ function App() {
     <StoreProvider>
       <Router> 
         <Routes>
-          <Route path="/" element={<Formulario />}/>
-          <Route path="comunidades" element={<Comunidades />}/>
+          <Route path="/" element={<Sobre />}/>
+          <Route path="login" element={<Formulario />}/>
+          <Route path="/comunidades" element={<Comunidades />}/>
           <Route path= "comunidades/home" element= {<Home/>}/>
           <Route path="posts" element={<Publicacoes/>}/>
           <Route path="chat" element={<Conversas/>}/>

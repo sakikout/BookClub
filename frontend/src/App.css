@@ -64,18 +64,18 @@ label {
   align-items: center;
   width: 120px;
   height: 120px;
-  border-radius: 50%; /* Torna o input redondo */
-  background-color: #ddd; /* Cor de fundo */
+  border-radius: 50%;
+  background-color: #ddd; 
   cursor: pointer;
   overflow: hidden;
 }
 
 .circle-input-label:hover {
-  background-color: #ccc; /* Cor ao passar o mouse */
+  background-color: #ccc;
 }
 
 .circle-input {
-  display: none; /* Esconde o input padrão */
+  display: none;
 }
 
 .circle-input-label::before {
@@ -130,8 +130,8 @@ label {
 }
 
 .divButtons{
-  display: flex; /* Usa flexbox para alinhar os botões lado a lado */
-  gap: 10px; /* Espaço entre os botões */
+  display: flex; 
+  gap: 10px; 
   height: 100%;
   /*width: 100dvh;*/
 }
