@@ -1,10 +1,10 @@
 # BookClub
-A simple social network project in React.js.
+Um projeto simples de rede social em React.js, voltado para usuários com interesse em literatura.
 
-## Objective
-The main objective is to create a distributed system for using a NoSQL database. In this project, we are using a graph-oriented database, MemGraph.
+## Objetivo
+O objetivo principal é criar um sistema distribuído para usar um banco de dados NoSQL. Neste projeto, estamos usando um banco de dados orientado a grafos, MemGraph.
 
-## Requirements
+## Requerimentos
 
 ### MemGraph
 Para instalar o MemGraph é necessário primeiramente intalar o *Docker* e, em seguida, rodar o seguinte comando no *Power Shell*:
@@ -25,7 +25,7 @@ Basta clicar no botão para conectar
 Obsevação: É necessário que o docker esteja rodando!
 
 
-###Backend (Python server)
+### Backend (Python server)
 ``` bash
 Flask==2.3.3
 Flask-Cors==4.0.0
@@ -36,7 +36,7 @@ cloudinary==1.41.0
 ````
 Caso tenha algum problema, todos podem ser instalados usando o comando `pip install ...`
 
-###Frontend
+### Frontend
 ``` bash
 "axios": "^1.6.5",
 "bootstrap": "^5.3.2",
@@ -57,28 +57,28 @@ Caso tenha algum problema, todos podem ser instalados usando o comando `npm inst
 
 
 
-## Running the application
+## Iniciar a aplicação
 Backend:
-1. Navigate to the project directory
+1. Navegue até o diretório do projeto
   ``` bash
 cd backend
 ````
 
-2. Start the server with the following command
+2. Inicie o servidor com o seguinte comando
   ``` bash
 python -m http.server 8080 
 ````
-or
+ou
   ``` bash
 python server-memgraph.py
 ````
 
 Frontend:
-1. Navigate to the project directory
+1. Navegue até o diretório do projeto
   ``` bash
 cd frontend
 ````
-2. Run the following command
+2. Digite o seguinte comando
   ``` bash
 npm run start
 ````
