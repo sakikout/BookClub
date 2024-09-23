@@ -497,7 +497,7 @@ def get_publicacoes():
         # reg, summary, keys = consultar_db('MATCH (c:Comunidade {nome: "'+ comunidade +'"})<-[:PERTENCE_A]-(p:Publicacao) RETURN p')
 
         reg, summary, keys = consultar_db(
-            'MATCH (p:Publicacao)-[:PERTENCE_A]->(com:Comunidade {nome: "'+ comunidade +'"}) OPTIONAL MATCH (p)<-[:CURTIU]-(u:Usuario) OPTIONAL MATCH (p)<-[rel:COMENTOU]-(v:Usuario) RETURN p, collect(DISTINCT u.usuario) AS curtidas, collect(DISTINCT rel) AS comentarios')
+            'MATCH (p:Publicacao)-[:PERTENCE_A]->(com:Comunidade {nome: "'+ comunidade +'"}) OPTIONAL MATCH (p)<-[:CURTIU]-(u:Usuario) OPTIONAL MATCH (p)<-[rel:COMENTOU]-(v:Usuario) RETURN p, collect(DISTINCT u.usuario) AS curtidas, collect(DISTINCT rel) AS comentarios ORDER BY p.data DESC')
 
         # Verificar o que está sendo retornado
         print("Dados recebidos da consulta:", reg)

@@ -15,7 +15,7 @@ const URL_API ='http://127.0.0.1:8080/api/'
 
 function getDateNow(){
   var d = new Date();
-  return d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear()
+  return d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes()
 }
 
 function createPosts(data) {

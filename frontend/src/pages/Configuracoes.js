@@ -171,6 +171,7 @@ function Configuracoes({userData}){
         setNome({nome: response.data.data[0][0]})
         console.log(usuario.usuario)
         setDeletePopup(false);
+        window.alert("Usuário Alterado!");
      
       })
       .catch(error => {
@@ -205,6 +206,7 @@ function Configuracoes({userData}){
         setUsuario({usuario: response.data.data[0][0]})
         console.log(nome.nome)
         setDeletePopup(false);
+        window.alert("Nome Alterado!");
      
       })
       .catch(error => {
@@ -234,6 +236,7 @@ function Configuracoes({userData}){
         console.log(response.data.data[0][0])
         setFoto({foto: response.data.data[0][0]});
         setDeletePopup(false);
+        window.alert("Foto Alterada!");
      
       })
       .catch(error => {
@@ -262,6 +265,7 @@ function Configuracoes({userData}){
         console.log('Resposta do servidor:', response.data);
         console.log(response.data.data[0][0])
         setDeletePopup(false);
+        window.alert("Senha Alterada!");
      
       })
       .catch(error => {
