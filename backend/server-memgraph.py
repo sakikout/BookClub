@@ -328,7 +328,7 @@ def get_avatar_usuario():
 
 def update_usuario(oldUser, newUser):
 
-    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacoes {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
+    reg_publicacoes, summary_publicacoes, keys_publicacoes = consultar_db('MATCH (n:Publicacao {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
     reg_comments, summary_comments, keys_comments = consultar_db('MATCH (n:Comentario {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
     reg_messages, summary_messages, keys_messages = consultar_db('MATCH (n:Mensagem {usuario: "' + oldUser + '"}) SET n.usuario = "' + newUser + '" RETURN n.usuario')
 
