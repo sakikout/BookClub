@@ -34,7 +34,7 @@ pymgclient==1.3.1
 neo4j==5.24.0
 cloudinary==1.41.0
 ````
-Caso tenha algum problema, todos podem ser instalados usando o comando `pip install ...`
+Caso tenha algum problema, todos podem ser instalados usando o comando `pip install ...` ou `pip install -r requirements.txt`
 
 ### Frontend
 ``` bash
